@@ -2,6 +2,9 @@ import xlrd
 from  xlutils import copy
 from collector.name_manager import execl_bean,url_manager
 import logging
+import collector.collect as collect
+
+
 
 
 logger = logging.getLogger("logger")
@@ -12,7 +15,7 @@ class excels():
         self.values=["SOURCENAME","ISSN","EISSN","WAIBUAID","PINJIE","FULL_URL","ABS_URL","FULL_PATH"]
         self.step=0
         # self.save_path="C:/pdfs/excel.xls"
-        self.report_path="C:/pdfs/report.txt"
+        self.report_path=collect.REPORT_PATH
         self.write_step=2
         self.report_step=3
         self.nums=[]
@@ -62,15 +65,16 @@ class excels():
 
             if not eb.is_done():
                 logger.info(eb.to_string())
-                self.um.save_step_names(eb.sourcename,self.step)
+                self.um.save_sourcenames(eb.sourcename)
                 self.um.save(eb,self.step)
         logger.info("execl读取完成。")
 
     def write(self):
         logger.info("写入execl...")
-        for sn in self.um.get_sourcenames(self.write_step):
+        for sn in self.um.get_sourcenames():
             while (True):
-                string = self.um.get_eb(sn)
+                url_name=self.um.fix(sn,self.write_step)
+                string = self.um.get_eb(url_name)
                 if string == None:
                     break
                 eb = execl_bean()
@@ -86,9 +90,10 @@ class excels():
 
     def report(self):
         file=open(self.report_path,"a+")
-        for sn in self.um.get_sourcenames(self.report_step):
+        for sn in self.um.get_sourcenames():
             while (True):
-                string = self.um.get_eb(sn)
+                url_name=self.um.fix(sn,self.report_step)
+                string = self.um.get_eb(url_name)
                 if string == None:
                     break
                 file.write(string+"\n")

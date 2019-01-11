@@ -3,6 +3,7 @@ import redis
 import json
 
 redis_ = redis.Redis(host="127.0.0.1", port=6379, db=1,decode_responses=True)
+# redis_ = redis.Redis(host="127.0.0.1", port=6379, decode_responses=True)
 
 class conf_bean():
     def __init__(self,sourcename,eissn):
@@ -143,12 +144,10 @@ class url_manager():
         self.name=name
         self.DONE="True"
 
-    def save_step_names(self,sourcename,step):
-        redis_.sadd(self.fix("step", step), self.fix(sourcename, step))
+    def save_sourcenames(self,sourcename):
+        redis_.sadd(self.name, sourcename)
 
     def save(self,execl_bean,step):
-        if step>1:
-            self.save_step_names(execl_bean.sourcename,step)
         redis_.lpush(self.fix(execl_bean.sourcename,step),execl_bean.to_string())
 
     def fix(self,string,step):
@@ -157,12 +156,12 @@ class url_manager():
     def done_name(self,sourcename,step):
         return self.name+ "_" + sourcename+ "_" + str(step)+"_done"
 
-    def get_sourcenames(self,step):
-        return redis_.smembers(self.fix("step",step))
+    def get_sourcenames(self):
+        return redis_.smembers(self.name)
 
     def get_eb(self,sourcename):
         # print(sourcename+":",redis_.llen(sourcename))
-        return redis_.lpop(sourcename)
+        return redis_.rpop(sourcename)
 
     def set_done(self,sourcename,step):
         redis_.set(self.done_name(sourcename,step),self.DONE)
@@ -171,34 +170,32 @@ class url_manager():
         return redis_.get(self.done_name(sourcename,step))
 
     def clear(self):
-        redis_.delete(self.name+"_*")
+        for key in redis_.keys(self.name+"_*"):
+            redis_.delete(key)
 
+    def query(self):
+        download_url_step=1
+        download_pdf_step=2
+        for sn in self.get_sourcenames():
+            print("sourname : "+sn)
+            if self.get_done(sn,download_url_step) == self.DONE:
+                if self.get_done(sn,download_pdf_step) == self.DONE:
+                    print(sn+" 已经全部完成！")
+                else:
+                    print("下载链接已完成，正在下载PDF...")
+                    print("PDF剩余数："+str(redis_.llen(self.fix(sn,download_pdf_step-1))))
+            else:
+                print("正在解析下载链接...")
+                print("链接剩余数量："+str(redis_.llen(self.fix(sn,download_url_step-1))))
 
-
-
-
-
-
-
-def rm():
-    keys =  redis_.sscan("Gruyter")
-    print(type(keys))
-    for key in keys[1]:
-        redis_.delete(key)
-
-    redis_.delete("Gruyter")
-
-def query():
-    for key in redis_.keys("Gruyter*"):
-        print(key)
 
 
 if __name__ == '__main__':
-    for key in redis_.keys():
+    for key in redis_.keys("test0108*"):
         # redis_.delete(key)
         print(key ,redis_.type(key))
         if redis_.type(key) == "string":
-            print(redis_.get(key))
+            print(key,redis_.get(key))
         elif redis_.type(key) == "set":
             print(key," : ",redis_.scard(key)," : ",redis_.smembers(key))
         elif redis_.type(key) =="list":
