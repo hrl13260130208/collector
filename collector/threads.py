@@ -9,15 +9,14 @@ from  collector.errors import NoConfError
 
 logger = logging.getLogger("logger")
 class download_url(threading.Thread):
-    def __init__(self,url_set_name,um,tm):
+    def __init__(self,sourcename,um,tm):
         threading.Thread.__init__(self)
-        self.url_set_name=url_set_name
-        self.sourcename=url_set_name.split("_")[1]
+        self.sourcename=sourcename
         self.um=um
         self.tm=tm
         self.step=1
         self.err_step=3
-        self.um.save_step_names(self.sourcename,self.step)
+        self.url_set_name = um.fix(sourcename, self.step - 1)
 
     def run(self):
         logger.info(self.sourcename+" download_url start...")
@@ -36,14 +35,14 @@ class download_url(threading.Thread):
 
             jcb = name_manager.json_conf_bean(eb.sourcename, eb.eissn)
             try:
-                logger.info("get download url form: "+url)
+                logger.info(self.sourcename+"get download url form: "+url)
                 full_url=htmls.HTML(eb,jcb,self.tm).run(url)
             except NoConfError:
                 logger.info(eb.eissn+" 无可用的conf.")
                 eb.err_and_step=str(self.step)+"：  无可用的conf"
                 self.um.save(eb, self.err_step)
             except Exception as e:
-                logger.error("download_url " + self.sourcename + " has err",exc_info = True)
+                logger.error(self.sourcename +" download url " + url + " has err",exc_info = True)
                 if eb.retry <5:
                     logger.info("retry time:"+str(eb.retry))
                     eb.retry += 1
@@ -61,14 +60,14 @@ class download_url(threading.Thread):
 
 
 class download(threading.Thread):
-    def __init__(self,url_set_name,um,dir):
+    def __init__(self,sourcename,um,dir):
         threading.Thread.__init__(self)
         self.dir=dir
-        self.url_set_name = url_set_name
-        self.sourcename = url_set_name.split("_")[1]
+        self.sourcename = sourcename
         self.um=um
         self.step=2
         self.err_step = 3
+        self.url_set_name = um.fix(sourcename, self.step - 1)
 
     def run(self):
         logger.info(self.sourcename + " download start...")
@@ -76,6 +75,7 @@ class download(threading.Thread):
             string = self.um.get_eb(self.url_set_name)
             if string == None:
                 if self.um.get_done(self.sourcename,self.step-1) == self.um.DONE:
+                    self.um.set_done(self.sourcename, self.step)
                     break
                 else:
                     logger.info(self.sourcename+ " wait for download...")
@@ -84,23 +84,25 @@ class download(threading.Thread):
             eb = name_manager.execl_bean()
             eb.paser(string)
             file_path=self.creat_filename()
+            logger.info(self.sourcename +" : download pdf.download url:" + eb.full_url )
             try:
                 htmls.download(eb.full_url,file_path)
             except Exception :
-                logger.error("download " + self.sourcename + " has err",exc_info = True)
+                logger.error(self.sourcename +"download " + eb.full_url + " has err",exc_info = True)
                 if eb.retry <5:
                     logger.info("retry time:" + str(eb.retry) )
                     eb.retry += 1
                     self.um.save(eb,self.step-1)
                 else:
                     logger.info("retry:" + str(eb.retry) + "retry次数超过5次，不再重试。")
+                    eb.err_and_step = str(self.step) + "：下载pdf错误超过五次"
                     self.um.save(eb,self.err_step)
                 continue
 
             try:
                 eb.page=htmls.checkpdf(file_path)
             except Exception as e:
-                logger.error(self.sourcename + "check pdf has err",exc_info = True)
+                logger.error(self.sourcename + "check pdf ,pdf path: "+file_path+" has err,download url:"+eb.full_url,exc_info = True)
                 os.remove(file_path)
                 if eb.retry <5:
                     logger.info("retry time:" + str(eb.retry) )
@@ -108,6 +110,7 @@ class download(threading.Thread):
                     self.um.save(eb,self.step-1)
                 else:
                     logger.info("retry:" + str(eb.retry) + ".retry次数超过5次，不再重试。")
+                    eb.err_and_step = str(self.step) + "：pdf不完整，重下超过五次"
                     self.um.save(eb,self.err_step)
                 continue
             eb.full_path=file_path[8:]
