@@ -13,8 +13,8 @@ logger=logging.getLogger("logger")
 UPDATE="update"
 
 #文件路径配置
-REPORT_PATH="C:/pdfs/report.txt"
-first_dir = "C:/pdfs/"
+REPORT_PATH="F:/pdfs/report.txt"
+first_dir = "F:/pdfs/"
 
 
 
@@ -71,8 +71,8 @@ def check_task(name):
 
 
 if __name__ == '__main__':
-    name = "test0108"
-    file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/中信所待补全文清单_20181219..xls"
+    name = "mc0108"
+    file_path = "F:/hrl/mc/0108/中信所待补全文清单_20190108..xls"
 
     # check_task(name)
     cp=htmls.config_parser()

@@ -2,13 +2,14 @@ from bs4 import BeautifulSoup
 import requests
 from configparser import ConfigParser
 import PyPDF2
-from collector.name_manager import json_conf_bean,template_manager
+from collector import name_manager
 import faker
 import logging
 from collector.errors import NoConfError
 import time
 import copy
 import urllib.parse as parse
+
 fake = faker.Factory.create()
 
 
@@ -17,7 +18,7 @@ logger = logging.getLogger("logger")
 class config_parser():
     def __init__(self,*file_name):
         self.conf = ConfigParser()
-        self.tm = template_manager()
+        self.tm = name_manager.template_manager()
         self.backup_file="C:/pdfs/backup"
         if file_name:
             self.file_name=file_name
@@ -42,11 +43,11 @@ class config_parser():
         sections=self.conf.sections()
         for section in sections:
             rne=section.split("_")
-            jcb=json_conf_bean(rne[0],rne[1])
+            jcb=name_manager.json_conf_bean(rne[0],rne[1])
             jcb.set_conf(self.conf.items(section))
             self.tm.save(jcb)
     def backup(self):
-        file=open(self.backup_file,"w")
+        file=open(self.backup_file,"w+")
         for sourcename in self.tm.get_conf_name():
             for conf in self.tm.get_eissns(sourcename):
                 if not self.tm.is_default_key(conf):
@@ -56,7 +57,7 @@ class config_parser():
         file=open(self.backup_file)
         for line in file.readlines():
             args=line.split("#")
-            jcb=json_conf_bean(args[0],args[1])
+            jcb=name_manager.json_conf_bean(args[0],args[1])
             jcb.paser(args[2])
             self.tm.save(jcb)
 
@@ -82,7 +83,7 @@ class HTML():
             logger.debug(self.jcb.get_sourcename()+" default: "+str(confs))
 
             for conf in confs:
-                new_jcb=json_conf_bean(self.jcb.get_sourcename(),self.eb.eissn)
+                new_jcb=name_manager.json_conf_bean(self.jcb.get_sourcename(),self.eb.eissn)
                 new_jcb.paser(conf)
                 if self.test(new_jcb.conf,url):
                     logger.info("find a conf form default!")

@@ -1,6 +1,7 @@
 
 import redis
 import json
+from collector import collect
 
 redis_ = redis.Redis(host="127.0.0.1", port=6379, db=1,decode_responses=True)
 # redis_ = redis.Redis(host="127.0.0.1", port=6379, decode_responses=True)
@@ -191,19 +192,14 @@ class url_manager():
 
 
 if __name__ == '__main__':
-    for key in redis_.keys("test0108*"):
-        # redis_.delete(key)
-        print(key ,redis_.type(key))
-        if redis_.type(key) == "string":
-            print(key,redis_.get(key))
-        elif redis_.type(key) == "set":
-            print(key," : ",redis_.scard(key)," : ",redis_.smembers(key))
-        elif redis_.type(key) =="list":
-            print(key ," : ",redis_.llen(key)," : ", redis_.lrange(key,0,100))
-
-    """
-    jcb=json_conf_bean("Gruyter","2255-8691")
-    print(jcb.load())
-    print(jcb.conf)
-"""
+    # for key in redis_.keys("*"):
+    #     redis_.delete(key)
+        # print(key ,redis_.type(key))
+        # if redis_.type(key) == "string":
+        #     print(key,redis_.get(key))
+        # elif redis_.type(key) == "set":
+        #     print(key," : ",redis_.scard(key)," : ",redis_.smembers(key))
+        # elif redis_.type(key) =="list":
+        #     print(key ," : ",redis_.llen(key)," : ", redis_.lrange(key,0,100))
+    collect.check_task("mc0108")
 

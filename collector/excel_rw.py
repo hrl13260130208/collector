@@ -2,7 +2,7 @@ import xlrd
 from  xlutils import copy
 from collector.name_manager import execl_bean,url_manager
 import logging
-import collector.collect as collect
+from collector import collect
 
 
 
