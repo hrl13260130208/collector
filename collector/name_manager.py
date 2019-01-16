@@ -64,15 +64,6 @@ class template_manager():
     def get_conf_string(self,key):
         return redis_.get(key)
 
-    def check_confs(self):
-        for sn in redis_.smembers(self.conf_name):
-            print("sourcename : ",sn)
-            for conf_name in redis_.smembers(sn):
-                if redis_.type(conf_name) == "set":
-                    print("    ",conf_name," : ",redis_.smembers(conf_name))
-                else:
-                    print("    ",conf_name," : ",redis_.get(conf_name))
-
 
 class json_conf_bean(conf_bean):
     def set_conf(self,conf):
@@ -198,22 +189,17 @@ class url_manager():
                 print("正在解析下载链接...")
                 print("链接剩余数量："+str(redis_.llen(self.fix(sn,download_url_step-1))))
 
-    def query_finsh_url(self):
-        for sn in self.get_sourcenames():
-            print("sourname : " + sn,"已完成数量："+str(redis_.llen(self.fix(sn,2))))
-
 
 
 if __name__ == '__main__':
-    # for key in redis_.keys("*"):
-    #     redis_.delete(key)
-        # print(key ,redis_.type(key))
-        # if redis_.type(key) == "string":
-        #     print(key,redis_.get(key))
-        # elif redis_.type(key) == "set":
-        #     print(key," : ",redis_.scard(key)," : ",redis_.smembers(key))
-        # elif redis_.type(key) =="list":
-        #     print(key ," : ",redis_.llen(key)," : ", redis_.lrange(key,0,100))
+    for key in redis_.keys("*"):
+        # redis_.delete(key)
+        print(key ,redis_.type(key))
+        if redis_.type(key) == "string":
+            print(key,redis_.get(key))
+        elif redis_.type(key) == "set":
+            print(key," : ",redis_.scard(key)," : ",redis_.smembers(key))
+        elif redis_.type(key) =="list":
+            print(key ," : ",redis_.llen(key)," : ", redis_.lrange(key,0,100))
     # collect.check_task("mc0108")
-    collect.check_conf()
 
