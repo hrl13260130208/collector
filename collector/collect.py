@@ -15,6 +15,7 @@ UPDATE="update"
 #文件路径配置
 REPORT_PATH="F:/pdfs/report.txt"
 first_dir = "F:/pdfs/"
+back_file="C:/pdfs/backup"
 
 
 
@@ -68,17 +69,36 @@ def check_task(name):
     um = name_manager.url_manager(name)
     um.query()
 
+def check_finsh_task(name):
+    um = name_manager.url_manager(name)
+    um.query_finsh_url()
+
+def check_conf():
+    tm=name_manager.template_manager()
+    tm.check_confs()
+
+def test_download():
+    url_="http://dx.doi.org/10.1016/j.ajsl.2018.12.004"
+    file_="C:/File/sdf.pdf"
+    section="Elsevier_1028-4559-1875-6263"
+    cp=htmls.config_parser()
+    cp.get_section(section)
+    d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
+    print(d_url)
+    htmls.download(d_url,file_)
+    print(htmls.checkpdf(file_))
 
 
 if __name__ == '__main__':
-    name = "mc0108"
-    file_path = "F:/hrl/mc/0108/中信所待补全文清单_20190108..xls"
-
-    # check_task(name)
-    cp=htmls.config_parser()
-    cp.paser()
-    start(name,file_path)
-    cp.backup()
+    # name = "mc0108"
+    # file_path = "F:/hrl/mc/0108/中信所待补全文清单_20190108..xls"
+    #
+    # # check_task(name)
+    # cp=htmls.config_parser()
+    # cp.paser()
+    # start(name,file_path)
+    # cp.backup()
+    test_download()
 
 
 

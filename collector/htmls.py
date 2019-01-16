@@ -9,6 +9,8 @@ from collector.errors import NoConfError
 import time
 import copy
 import urllib.parse as parse
+import progressbar
+from collector import collect
 
 fake = faker.Factory.create()
 
@@ -19,7 +21,7 @@ class config_parser():
     def __init__(self,*file_name):
         self.conf = ConfigParser()
         self.tm = name_manager.template_manager()
-        self.backup_file="C:/pdfs/backup"
+        self.backup_file=collect.back_file
         if file_name:
             self.file_name=file_name
         else:
@@ -114,27 +116,36 @@ class HTML():
 
     def do_run(self,conf,url):
         url_s=""
+        url_num = 0
         html = get_html(url)
         soup = BeautifulSoup(html, "html.parser")
         conf.sort()
         last = conf[conf.__len__() - 1]
-        if last[0] == "url":
+        if last[0].find("url") != -1:
+            temp_s=last[0].split("_")
+            if temp_s.__len__() !=1:
+                url_num=int(temp_s[1])
             url_s = last[1]
             conf.remove(last)
-        return  self.run_url(url_s,conf,soup)
+        return  self.run_url(url_s,url_num,conf,soup)
 
-    def run_url(self,url_s,conf,soup):
-
+    def run_url(self,url_s,url_num,conf,soup):
         first =conf[0]
         url = self.get_url(first[1],soup)
         conf.remove(first)
         logger.debug("url : "+url)
         if conf.__len__() == 0:
-            return url_s+url
+            if url_num == "0":
+                return url_s+url
+            else:
+                return url
         else:
-            html = get_html(url)
+            if int(first[0]) == url_num:
+                html = get_html(url_s+url)
+            else:
+                html = get_html(url)
             new_soup = BeautifulSoup(html, "html.parser")
-            return  self.run_url(url_s,conf,new_soup)
+            return  self.run_url(url_s,url_num,conf,new_soup)
 
     def get_url(self,string,soup):
         strs=string.split(";")
@@ -174,10 +185,25 @@ def get_html(url):
 
 def download(url, file):
     time.sleep(2)
+    size = 0
     data = requests.get(url, headers=header,timeout=30)
     data.encoding = 'utf-8'
-    file = open(file, "wb")
+    file = open(file, "wb+")
     file.write(data.content)
+    # total_length = int(data.headers.get("Content-Length"))
+    # with open(file, 'wb') as f:
+    #     print('start download')
+    #     widgets = ['Progress: ', progressbar.Percentage(), ' ', progressbar.Bar(marker='#', left='[', right=']'), ' ',
+    #                progressbar.ETA(), ' ', progressbar.FileTransferSpeed()]
+    #     pbar = progressbar.ProgressBar(widgets=widgets, maxval=total_length).start()
+    #     for chunk in file.iter_content():
+    #         if chunk:
+    #             size += len(chunk)
+    #             f.write(chunk)
+    #         pbar.update(size)
+    #     pbar.finish()
+    #     f.flush()
+
 
 def checkpdf(file):
     pdf = PyPDF2.PdfFileReader(file)
