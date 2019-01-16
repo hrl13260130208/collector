@@ -205,15 +205,19 @@ class url_manager():
 
 
 if __name__ == '__main__':
-    # for key in redis_.keys("*"):
-    #     redis_.delete(key)
-        # print(key ,redis_.type(key))
-        # if redis_.type(key) == "string":
-        #     print(key,redis_.get(key))
-        # elif redis_.type(key) == "set":
-        #     print(key," : ",redis_.scard(key)," : ",redis_.smembers(key))
-        # elif redis_.type(key) =="list":
-        #     print(key ," : ",redis_.llen(key)," : ", redis_.lrange(key,0,100))
+    for key in redis_.keys("*"):
+        # redis_.delete(key)
+        print(key ,redis_.type(key))
+        if redis_.type(key) == "string":
+            print(key,redis_.get(key))
+        elif redis_.type(key) == "set":
+            print(key," : ",redis_.scard(key)," : ",redis_.smembers(key))
+        elif redis_.type(key) =="list":
+            print(key ," : ",redis_.llen(key)," : ", redis_.lrange(key,0,100))
+    
+
     # collect.check_task("mc0108")
-    collect.check_conf()
+
+
+    # collect.check_conf()
 
