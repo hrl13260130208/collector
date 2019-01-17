@@ -13,16 +13,27 @@ logger=logging.getLogger("logger")
 UPDATE="update"
 
 #文件路径配置
-REPORT_PATH="F:/pdfs/report.txt"
-first_dir = "F:/pdfs/"
+# REPORT_PATH="F:/pdfs/report.txt"
+REPORT_PATH="C:/pdfs/report.txt"
+# first_dir = "F:/pdfs/"
+first_dir = "C:/pdfs/"
+# back_file="F:/pdfs/backup"
 back_file="C:/pdfs/backup"
 
+#重试次数
+DOWNLOAD_URL_RETRY=5
+DOWNLOAD_RETRY=5
+CHECK_PDF_RETRY=3
 
 
-def init_download_url_thread(um,tm,thread_list):
+
+def init_download_url_thread(um,tm,thread_list,dir):
     url_set_names=um.get_sourcenames()
     for url_set_name in url_set_names:
-        th=threads.download_url(url_set_name, um, tm)
+        if url_set_name == "Elsevier":
+            th=threads.Elsevier_download(url_set_name,um,tm,dir)
+        else:
+            th=threads.download_url(url_set_name, um, tm)
         thread_list.append(th)
         th.start()
     return thread_list
@@ -30,6 +41,8 @@ def init_download_url_thread(um,tm,thread_list):
 def init_download_and_check_thread(um,thread_list,dir):
     sns=um.get_sourcenames()
     for sn in sns:
+        if sn =="Elsevier":
+            continue
         th=threads.download(sn, um, dir)
         thread_list.append(th)
         th.start()
@@ -54,8 +67,9 @@ def start(name,file_path):
     execl.write()
     um.clear()
     execl.read()
-    thread_list = init_download_url_thread(um, tm, thread_list)
     dir = create_dir(name)
+
+    thread_list = init_download_url_thread(um, tm, thread_list,dir)
     thread_list = init_download_and_check_thread(um, thread_list, dir)
 
     for th in thread_list:
@@ -78,7 +92,7 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://dx.doi.org/10.1016/j.ajsl.2018.12.004"
+    url_="http://dx.doi.org/10.1016/j.ifacol.2018.11.624"
     file_="C:/File/sdf.pdf"
     section="Elsevier_1028-4559-1875-6263"
     cp=htmls.config_parser()
@@ -90,15 +104,16 @@ def test_download():
 
 
 if __name__ == '__main__':
-    # name = "mc0108"
+    name = "mc0108"
     # file_path = "F:/hrl/mc/0108/中信所待补全文清单_20190108..xls"
-    #
-    # # check_task(name)
-    # cp=htmls.config_parser()
-    # cp.paser()
-    # start(name,file_path)
-    # cp.backup()
-    test_download()
+    file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/0108/test.xls"
+
+    # check_task(name)
+    cp=htmls.config_parser()
+    cp.paser()
+    start(name,file_path)
+    cp.backup()
+    # test_download()
 
 
 

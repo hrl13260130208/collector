@@ -3,8 +3,8 @@ import redis
 import json
 from collector import collect
 
-redis_ = redis.Redis(host="127.0.0.1", port=6379, db=1,decode_responses=True)
-# redis_ = redis.Redis(host="127.0.0.1", port=6379, decode_responses=True)
+# redis_ = redis.Redis(host="127.0.0.1", port=6379, db=1,decode_responses=True)
+redis_ = redis.Redis(host="10.3.1.99", port=6379, decode_responses=True)
 
 class conf_bean():
     def __init__(self,sourcename,eissn):
