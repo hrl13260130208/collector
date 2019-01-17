@@ -127,7 +127,10 @@ class HTML():
                 url_num=int(temp_s[1])
             url_s = last[1]
             conf.remove(last)
-        return  self.run_url(url_s,url_num,conf,soup)
+            # print("==========================",url_num)
+            r_url=self.run_url(url_s, url_num, conf, soup)
+            # print("=====================",r_url)
+        return r_url
 
     def run_url(self,url_s,url_num,conf,soup):
         first =conf[0]
@@ -135,7 +138,8 @@ class HTML():
         conf.remove(first)
         logger.debug("url : "+url)
         if conf.__len__() == 0:
-            if url_num == "0":
+
+            if url_num == 0:
                 return url_s+url
             else:
                 return url
