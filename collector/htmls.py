@@ -118,6 +118,7 @@ class HTML():
         url_s=""
         url_num = 0
         html = get_html(url)
+        # print(html)
         soup = BeautifulSoup(html, "html.parser")
         conf.sort()
         last = conf[conf.__len__() - 1]
@@ -127,10 +128,7 @@ class HTML():
                 url_num=int(temp_s[1])
             url_s = last[1]
             conf.remove(last)
-            # print("==========================",url_num)
-            r_url=self.run_url(url_s, url_num, conf, soup)
-            # print("=====================",r_url)
-        return r_url
+        return self.run_url(url_s, url_num, conf, soup)
 
     def run_url(self,url_s,url_num,conf,soup):
         first =conf[0]
@@ -159,6 +157,10 @@ class HTML():
             return tag["href"]
         elif tag.name=="input":
             return parse.unquote(tag["value"])
+        elif tag.name == "link":
+            return tag["href"]
+        elif tag.name == "meta":
+            return tag["content"]
         else:
             return tag.find("a")["href"]
 
@@ -177,7 +179,7 @@ class HTML():
 
 
 
-header={"User-Agent": fake.user_agent()}
+header={"User-Agent": fake.user_agent(),"upgrade-insecure-requests": "1"}
 
 def get_html(url):
     time.sleep(2)
@@ -190,7 +192,7 @@ def get_html(url):
 def download(url, file):
     time.sleep(2)
     size = 0
-    data = requests.get(url, headers=header,timeout=30)
+    data = requests.get(url, headers=header,verify=False,timeout=30)
     data.encoding = 'utf-8'
     file = open(file, "wb+")
     file.write(data.content)

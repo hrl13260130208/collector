@@ -109,8 +109,9 @@ class execl_bean():
         if self.full_path == "No pdf":
             self.done = True
         if self.sourcename.find("Sage")!=-1:
-            print(self.sourcename)
             self.sourcename="Sage"
+        if self.sourcename.find("SRP") != -1:
+            self.sourcename = "SRP"
         # print(self.sourcename.find("Sage"))
         # if self.sourcename=="Elsevier":
         #     self.done = True
@@ -206,7 +207,7 @@ class url_manager():
 
 if __name__ == '__main__':
     for key in redis_.keys("*"):
-        # redis_.delete(key)
+        redis_.delete(key)
         print(key ,redis_.type(key))
         if redis_.type(key) == "string":
             print(key,redis_.get(key))

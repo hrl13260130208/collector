@@ -92,9 +92,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://dx.doi.org/10.1016/j.ifacol.2018.11.624"
+    url_="http://dx.doi.org/10.22219/kinetik.v4i1.687"
     file_="C:/File/sdf.pdf"
-    section="Elsevier_1028-4559-1875-6263"
+    section="Doaj_2503-2259-2503-2267"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
@@ -104,16 +104,16 @@ def test_download():
 
 
 if __name__ == '__main__':
-    name = "mc0108"
-    # file_path = "F:/hrl/mc/0108/中信所待补全文清单_20190108..xls"
-    file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/0108/test.xls"
-
-    # check_task(name)
-    cp=htmls.config_parser()
-    cp.paser()
-    start(name,file_path)
-    cp.backup()
-    # test_download()
+    # name = "zx0122"
+    # # file_path = "F:/hrl/mc/0108/中信所待补全文清单_20190108..xls"
+    # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/0121/中信所待补全文清单_20190121. - 副本.xls"
+    #
+    # #check_task(name)
+    # cp=htmls.config_parser()
+    # cp.paser()
+    # start(name,file_path)
+    # cp.backup()
+    test_download()
 
 
 
