@@ -3,7 +3,7 @@ import redis
 import json
 from collector import collect
 
-# redis_ = redis.Redis(host="127.0.0.1", port=6379, db=1,decode_responses=True)
+# redis_ = redis.Redis(host="10.3.1.99", port=6379, db=1,decode_responses=True)
 redis_ = redis.Redis(host="10.3.1.99", port=6379, decode_responses=True)
 
 class conf_bean():
@@ -206,9 +206,9 @@ class url_manager():
 
 
 if __name__ == '__main__':
-    for key in redis_.keys("*"):
-        redis_.delete(key)
-        print(key ,redis_.type(key))
+    for key in redis_.keys("zx0122*"):
+        # redis_.delete(key)
+        # print(key ,redis_.type(key))
         if redis_.type(key) == "string":
             print(key,redis_.get(key))
         elif redis_.type(key) == "set":
@@ -217,7 +217,7 @@ if __name__ == '__main__':
             print(key ," : ",redis_.llen(key)," : ", redis_.lrange(key,0,100))
     
 
-    # collect.check_task("mc0108")
+    # collect.check_task("zx0122")
 
 
     # collect.check_conf()
