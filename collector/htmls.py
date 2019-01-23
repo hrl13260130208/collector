@@ -108,6 +108,8 @@ class HTML():
         result=None
         try:
             result=self.do_run(copy_conf,url)
+            download(result,collect.test_file)
+            checkpdf(collect.test_file)
         except:
             logger.error(url+" has err: ",exc_info = True)
             result=None
@@ -191,24 +193,11 @@ def get_html(url):
 
 def download(url, file):
     time.sleep(2)
-    size = 0
     data = requests.get(url, headers=header,verify=False,timeout=30)
     data.encoding = 'utf-8'
     file = open(file, "wb+")
     file.write(data.content)
-    # total_length = int(data.headers.get("Content-Length"))
-    # with open(file, 'wb') as f:
-    #     print('start download')
-    #     widgets = ['Progress: ', progressbar.Percentage(), ' ', progressbar.Bar(marker='#', left='[', right=']'), ' ',
-    #                progressbar.ETA(), ' ', progressbar.FileTransferSpeed()]
-    #     pbar = progressbar.ProgressBar(widgets=widgets, maxval=total_length).start()
-    #     for chunk in file.iter_content():
-    #         if chunk:
-    #             size += len(chunk)
-    #             f.write(chunk)
-    #         pbar.update(size)
-    #     pbar.finish()
-    #     f.flush()
+
 
 
 def checkpdf(file):

@@ -20,6 +20,9 @@ first_dir = "C:/pdfs/"
 # back_file="F:/pdfs/backup"
 back_file="C:/pdfs/backup"
 
+test_file="C:/File/sdf.pdf"
+#test_file="C:/File/sdf.pdf"
+
 #重试次数
 DOWNLOAD_URL_RETRY=5
 DOWNLOAD_RETRY=5
@@ -92,15 +95,15 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://dx.doi.org/10.22219/kinetik.v4i1.687"
-    file_="C:/File/sdf.pdf"
-    section="Doaj_2503-2259-2503-2267"
+    url_="http://dx.doi.org/10.1186/s11671-018-2819-4"
+
+    section="Springer_1931-7573-1556-276X"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
     print(d_url)
-    htmls.download(d_url,file_)
-    print(htmls.checkpdf(file_))
+    htmls.download(d_url,test_file)
+    print(htmls.checkpdf(test_file))
 
 
 if __name__ == '__main__':

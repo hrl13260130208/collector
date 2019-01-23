@@ -36,12 +36,13 @@ class download_url(threading.Thread):
 
             jcb = name_manager.json_conf_bean(eb.sourcename, eb.eissn)
             try:
-                logger.info(self.sourcename+"get download url form: "+url)
+                logger.info(self.sourcename+" get download url form: "+url)
                 full_url=htmls.HTML(eb,jcb,self.tm).run(url)
             except NoConfError:
-                logger.info(eb.eissn+" 无可用的conf.")
+                logger.info(eb.sourcename+" "+eb.eissn+" 无可用的conf.")
                 eb.err_and_step=str(self.step)+"：  无可用的conf"
                 self.um.save(eb, self.err_step)
+                continue
             except Exception as e:
                 logger.error(self.sourcename +" download url " + url + " has err",exc_info = True)
                 if eb.retry <collect.DOWNLOAD_URL_RETRY:
