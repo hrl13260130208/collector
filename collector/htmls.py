@@ -9,7 +9,7 @@ from collector.errors import NoConfError
 import time
 import copy
 import urllib.parse as parse
-import progressbar
+#import progressbar
 from collector import collect
 
 fake = faker.Factory.create()
@@ -130,6 +130,8 @@ class HTML():
                 url_num=int(temp_s[1])
             url_s = last[1]
             conf.remove(last)
+        if last[0] =="0":
+            return url
         return self.run_url(url_s, url_num, conf, soup)
 
     def run_url(self,url_s,url_num,conf,soup):
@@ -148,7 +150,10 @@ class HTML():
                 html = get_html(url_s+url)
             else:
                 html = get_html(url)
+
+            #print(html)
             new_soup = BeautifulSoup(html, "html.parser")
+
             return  self.run_url(url_s,url_num,conf,new_soup)
 
     def get_url(self,string,soup):
