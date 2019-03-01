@@ -9,7 +9,7 @@ from collector.errors import NoConfError
 import time
 import copy
 import urllib.parse as parse
-import progressbar
+
 from collector import collect
 
 fake = faker.Factory.create()
@@ -208,16 +208,6 @@ def checkpdf(file):
 
 
 
-if __name__ == '__main__':
 
-    url="http://dx.doi.org/10.1007/s13753-018-0205-6"
-    url2="http://dx.doi.org/10.1007/s13753-018-0199-0"
-    cp=config_parser()
-    # res=cp.get_section("Gruyter_2255-8683-2255-8691")
-    print(cp.test("Springer_2199-6687-2199-6679",url2))
-    # url="https%3A%2F%2Fasian-nursingresearch.com%2Fretrieve%2Fpii%2FS1976131718301245"
-    # url=parse.unquote(url)
-    # print(url)
-    # print(get_html(url))
 
 
