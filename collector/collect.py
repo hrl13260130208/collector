@@ -13,12 +13,12 @@ logger=logging.getLogger("logger")
 UPDATE="update"
 
 #文件路径配置
-# REPORT_PATH="F:/pdfs/report.txt"
-REPORT_PATH="C:/pdfs/report.txt"
-# first_dir = "F:/pdfs/"
-first_dir = "C:/pdfs/"
-# back_file="F:/pdfs/backup"
-back_file="C:/pdfs/backup"
+REPORT_PATH="F:/pdfs/report.txt"
+# REPORT_PATH="C:/pdfs/report.txt"
+first_dir = "F:/pdfs/"
+# first_dir = "C:/pdfs/"
+back_file="F:/pdfs/backup"
+# back_file="C:/pdfs/backup"
 
 test_file="C:/File/sdf.pdf"
 #test_file="C:/File/sdf.pdf"
@@ -95,9 +95,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://dx.doi.org/10.1186/s11671-018-2819-4"
+    url_="http://dx.doi.org/10.4236/oalib.1105098"
 
-    section="Springer_1931-7573-1556-276X"
+    section="SRP_2333-9705-2333-9721"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
@@ -107,16 +107,20 @@ def test_download():
 
 
 if __name__ == '__main__':
-    # name = "zx0122"
-    # # file_path = "F:/hrl/mc/0108/中信所待补全文清单_20190108..xls"
-    # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/0121/中信所待补全文清单_20190121. - 副本.xls"
-    #
-    # #check_task(name)
-    # cp=htmls.config_parser()
-    # cp.paser()
-    # start(name,file_path)
-    # cp.backup()
-    test_download()
+    name = "zx0122"
+    #name = "yj0122"
+    # name = "jx0122"
+
+    #file_path = "F:/hrl/mc/0121/冶金所待补全文清单_20190121..xls"
+    # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
+    file_path = "F:/hrl/mc/0121/中信所待补全文清单_20190121..xls"
+
+    #check_task(name)
+    cp=htmls.config_parser()
+    cp.paser()
+    start(name,file_path)
+    cp.backup()
+    # test_download()
 
 
 
