@@ -201,7 +201,7 @@ def download(url, file):
 
 
 def checkpdf(file):
-    pdf = PyPDF2.PdfFileReader(file)
+    pdf = PyPDF2.PdfFileReader(open(file,"rb"),strict=False)
     return pdf.getNumPages()
 
 

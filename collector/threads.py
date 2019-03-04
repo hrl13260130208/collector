@@ -31,12 +31,14 @@ class download_url(threading.Thread):
             url=""
             if eb.sourcename == "PMC":
                 url="https://www.ncbi.nlm.nih.gov/pmc/articles/"+eb.waibuaid
+                eb.abs_url=url
             else:
                 url= eb.pinjie
 
             jcb = name_manager.json_conf_bean(eb.sourcename, eb.eissn)
             try:
-                if eb.full_url == None:
+
+                if eb.full_url == "":
                     logger.info(self.sourcename+" get download url form: "+url)
                     full_url=htmls.HTML(eb,jcb,self.tm).run(url)
                 else:

@@ -95,9 +95,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://dx.doi.org/10.4236/oalib.1105098"
+    url_="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6355085"
 
-    section="SRP_2333-9705-2333-9721"
+    section="Springer_1931-7573-1556-276X"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
@@ -107,13 +107,13 @@ def test_download():
 
 
 if __name__ == '__main__':
-    name = "zx0122"
-    #name = "yj0122"
-    # name = "jx0122"
+    name = "zx0225"
+    #name = "yj0225"
+    #name = "jx0225"
 
-    #file_path = "F:/hrl/mc/0121/冶金所待补全文清单_20190121..xls"
-    # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
-    file_path = "F:/hrl/mc/0121/中信所待补全文清单_20190121..xls"
+    # file_path = "F:/hrl/mc/0225/冶金所待补全文清单_20190225..xls"
+    #file_path = "F:/hrl/mc/0225/机械所待补全文清单_20190225..xls"
+    file_path = "F:/hrl/mc/0225/中信所待补全文清单_20190225..xls"
 
     #check_task(name)
     cp=htmls.config_parser()
