@@ -194,6 +194,7 @@ def get_html(url):
 def download(url, file):
     time.sleep(2)
     data = requests.get(url, headers=header,verify=False,timeout=30)
+    print(data.text)
     data.encoding = 'utf-8'
     file = open(file, "wb+")
     file.write(data.content)
@@ -209,12 +210,13 @@ def checkpdf(file):
 
 
 if __name__ == '__main__':
+   pass
 
-    url="http://dx.doi.org/10.1007/s13753-018-0205-6"
-    url2="http://dx.doi.org/10.1007/s13753-018-0199-0"
-    cp=config_parser()
-    # res=cp.get_section("Gruyter_2255-8683-2255-8691")
-    print(cp.test("Springer_2199-6687-2199-6679",url2))
+    # url="http://dx.doi.org/10.1007/s13753-018-0205-6"
+    # url2="http://dx.doi.org/10.1007/s13753-018-0199-0"
+    # cp=config_parser()
+    # # res=cp.get_section("Gruyter_2255-8683-2255-8691")
+    # print(cp.test("Springer_2199-6687-2199-6679",url2))
     # url="https%3A%2F%2Fasian-nursingresearch.com%2Fretrieve%2Fpii%2FS1976131718301245"
     # url=parse.unquote(url)
     # print(url)

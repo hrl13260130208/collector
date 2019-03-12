@@ -4,7 +4,7 @@ from collector import threads
 from collector import htmls
 import os
 import logging
-import sys
+import requests
 
 
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -95,9 +95,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://dx.doi.org/10.4236/oalib.1105098"
+    url_="http://journals.tubitak.gov.tr/elektrik/abstract.htm?id=23581"
 
-    section="SRP_2333-9705-2333-9721"
+    section="Scientific and Technical Research Council of Turkey_1300-0632-1303-6203"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
@@ -107,20 +107,26 @@ def test_download():
 
 
 if __name__ == '__main__':
-    name = "zx0122"
-    #name = "yj0122"
-    # name = "jx0122"
+    # name = "zx0122"
+    # #name = "yj0122"
+    # # name = "jx0122"
+    #
+    # #file_path = "F:/hrl/mc/0121/冶金所待补全文清单_20190121..xls"
+    # # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
+    # file_path = "F:/hrl/mc/0121/中信所待补全文清单_20190121..xls"
+    #
+    # #check_task(name)
+    # cp=htmls.config_parser()
+    # cp.paser()
+    # start(name,file_path)
+    # cp.backup()
+    # url = "http://journals.tubitak.gov.tr/elektrik/issues/elk-18-26-6/elk-26-6-2-1802-189.pdf"
+    # data=requests.get(url)
+    # print(data.text)
+    # file = open(test_file, "wb+")
+    # file.write(data.content)
+    test_download()
 
-    #file_path = "F:/hrl/mc/0121/冶金所待补全文清单_20190121..xls"
-    # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
-    file_path = "F:/hrl/mc/0121/中信所待补全文清单_20190121..xls"
-
-    #check_task(name)
-    cp=htmls.config_parser()
-    cp.paser()
-    start(name,file_path)
-    cp.backup()
-    # test_download()
 
 
 

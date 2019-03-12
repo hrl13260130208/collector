@@ -113,6 +113,13 @@ class execl_bean():
             self.sourcename="Sage"
         if self.sourcename.find("SRP") != -1:
             self.sourcename = "SRP"
+        if self.sourcename.find("American Institute of Physics") != -1:
+            self.sourcename = "American Institute of Physics"
+            if self.abs_url!="":
+                self.pinjie=self.abs_url
+
+
+
         # print(self.sourcename.find("Sage"))
         # if self.sourcename=="Elsevier":
         #     self.done = True
