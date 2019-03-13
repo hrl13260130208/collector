@@ -102,7 +102,7 @@ def test_download():
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
     print(d_url)
-    htmls.download(d_url,test_file)
+    htmls.download(d_url.strip(),test_file)
     print(htmls.checkpdf(test_file))
 
 
@@ -120,11 +120,11 @@ if __name__ == '__main__':
     # cp.paser()
     # start(name,file_path)
     # cp.backup()
-    # url = "http://journals.tubitak.gov.tr/elektrik/issues/elk-18-26-6/elk-26-6-2-1802-189.pdf"
-    # data=requests.get(url)
-    # print(data.text)
-    # file = open(test_file, "wb+")
-    # file.write(data.content)
+    url = "http://journals.tubitak.gov.tr/elektrik/issues/elk-18-26-6/elk-26-6-2-1802-189.pdf"
+    data=requests.get(url)
+    print(data.text)
+    file = open(test_file, "wb+")
+    file.write(data.content)
     test_download()
 
 
