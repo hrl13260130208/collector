@@ -20,7 +20,7 @@ class download_url(threading.Thread):
         self.url_set_name = um.fix(sourcename, self.step - 1)
 
     def run(self):
-        logger.info(self.sourcename+" download_url start...")
+        logger.info("URL_THREAD - "+self.name+" - "+self.sourcename+" download_url start...")
         while(True):
             string=self.um.get_eb(self.url_set_name)
             if string ==None:
@@ -37,7 +37,7 @@ class download_url(threading.Thread):
             jcb = name_manager.json_conf_bean(eb.sourcename, eb.eissn)
             try:
                 if eb.full_url == "":
-                    logger.info(self.sourcename+" get download url form: "+url)
+                    logger.info("URL_THREAD - "+self.name+" - "+self.sourcename+" get download url form: "+url)
                     full_url=htmls.HTML(eb,jcb,self.tm).run(url)
                 else:
                     full_url=eb.full_url
@@ -61,7 +61,7 @@ class download_url(threading.Thread):
             eb.full_url = full_url
             eb.abs_url = url
             self.um.save(eb,self.step)
-        logger.info(self.sourcename + " download_url finsh.")
+        logger.info("URL_THREAD - "+self.name+" - "+self.sourcename + " download_url finsh.")
 
 
 class download(threading.Thread):
@@ -75,7 +75,7 @@ class download(threading.Thread):
         self.url_set_name = um.fix(sourcename, self.step - 1)
 
     def run(self):
-        logger.info(self.sourcename + " download start...")
+        logger.info("PDF_THREAD - "+self.name+" - "+self.sourcename + " download start...")
         while(True):
             string = self.um.get_eb(self.url_set_name)
             if string == None:
@@ -83,13 +83,13 @@ class download(threading.Thread):
                     self.um.set_done(self.sourcename, self.step)
                     break
                 else:
-                    logger.info(self.sourcename+ " wait for download...")
+                    logger.info("PDF_THREAD - "+self.name+" - "+self.sourcename+ " wait for download...")
                     time.sleep(30)
                     continue
             eb = name_manager.execl_bean()
             eb.paser(string)
             file_path=self.creat_filename()
-            logger.info(self.sourcename +" : download pdf.download url:" + eb.full_url )
+            logger.info("PDF_THREAD - "+self.name+" - "+self.sourcename +" : download pdf.download url:" + eb.full_url )
             try:
                 htmls.download(eb.full_url,file_path)
             except Exception :
@@ -120,7 +120,7 @@ class download(threading.Thread):
                 continue
             eb.full_path=file_path[8:]
             self.um.save(eb,self.step)
-        logger.info(self.sourcename + " download finsh.")
+        logger.info("URL_THREAD - "+self.name+" - "+self.sourcename + " download finsh.")
 
     def creat_filename(self):
         uid=str(uuid.uuid1())
