@@ -95,9 +95,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://journals.tubitak.gov.tr/elektrik/abstract.htm?id=23581"
+    url_="http://dx.doi.org/10.2478/bjdm-2018-0016"
 
-    section="Scientific and Technical Research Council of Turkey_1300-0632-1303-6203"
+    section="Gruyter_2255-8683-2255-8691"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
@@ -107,25 +107,23 @@ def test_download():
 
 
 if __name__ == '__main__':
-    # name = "zx0122"
-    # #name = "yj0122"
-    # # name = "jx0122"
-    #
-    # #file_path = "F:/hrl/mc/0121/冶金所待补全文清单_20190121..xls"
-    # # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
-    # file_path = "F:/hrl/mc/0121/中信所待补全文清单_20190121..xls"
-    #
-    # #check_task(name)
-    # cp=htmls.config_parser()
-    # cp.paser()
-    # start(name,file_path)
-    # cp.backup()
-    url = "http://journals.tubitak.gov.tr/elektrik/issues/elk-18-26-6/elk-26-6-2-1802-189.pdf"
-    data=requests.get(url)
-    print(data.text)
-    file = open(test_file, "wb+")
-    file.write(data.content)
-    test_download()
+    # name = "zx0311"
+    # name = "yj0122"
+    # name = "jx0122"
+    name="gruyter0319"
+
+
+    #file_path = "F:/hrl/mc/0121/冶金所待补全文清单_20190121..xls"
+    # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
+    # file_path = "F:/hrl/mc/0311/中信所待补全文清单_20190311..xls"
+    file_path="F:/hrl/mc/other/gruyter2018-2019待采全文的文章清单.xls"
+    #check_task(name)
+    cp=htmls.config_parser()
+    cp.paser()
+    start(name,file_path)
+    cp.backup()
+
+    # test_download()
 
 
 

@@ -115,8 +115,10 @@ class execl_bean():
             self.sourcename = "SRP"
         if self.sourcename.find("American Institute of Physics") != -1:
             self.sourcename = "American Institute of Physics"
-            if self.abs_url!="":
-                self.pinjie=self.abs_url
+
+        if self.abs_url!="":
+            self.pinjie=self.abs_url
+
 
 
 
