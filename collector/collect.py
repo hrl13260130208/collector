@@ -7,7 +7,7 @@ import logging
 import requests
 import time
 import threading
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor,as_completed
 
 
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -115,20 +115,27 @@ def run_thread(name,file_path):
         th = threads.download(sn, um, dir)
         list.append(executor.submit(th.run))
 
-    while (list.__len__() > 0):
-        time.sleep(30)
-        print("++++++++++++++++")
-        for li in list:
-            print('==============')
-            if li.done():
-                print(li.result())
-                if li.exception() != None:
-                    logger.error("程序异常，全部退出！")
-                    for li in list:
-                        li.cancel()
-                    exit(0)
-                else:
-                    list.remove(li)
+    for fu in as_completed(list):
+        print(fu.result())
+        if fu.exception() != None:
+            logger.error("程序异常，全部退出！")
+            exit(0)
+
+
+    # while (list.__len__() > 0):
+    #     time.sleep(30)
+    #     print("++++++++++++++++")
+    #     for li in list:
+    #         print('==============')
+    #         if li.done():
+    #             print(li.result())
+    #             if li.exception() != None:
+    #                 logger.error("程序异常，全部退出！")
+    #                 for li in list:
+    #                     li.cancel()
+    #                 exit(0)
+    #             else:
+    #                 list.remove(li)
     delte_error_pdf(um)
     execl.write()
     execl.report()
@@ -160,9 +167,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://dx.doi.org/10.1515/math-2018-0003"
+    url_="http://sor.scitation.org/doi/abs/10.1121/2.0000817"
 
-    section="Gruyter_2391-5455"
+    section="American Institute of Physics_2468-2047"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
@@ -206,7 +213,7 @@ if __name__ == '__main__':
     cp.paser()
     run_thread(name,file_path)
     cp.backup()
-    #
+
     # test_download()
 
 

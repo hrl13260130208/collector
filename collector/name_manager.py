@@ -111,10 +111,12 @@ class execl_bean():
             self.done = True
         if self.sourcename.find("Sage")!=-1:
             self.sourcename="Sage"
-        if self.sourcename.find("SRP") != -1:
+        elif self.sourcename.find("SRP") != -1:
             self.sourcename = "SRP"
-        if self.sourcename.find("American Institute of Physics") != -1:
+        elif self.sourcename.find("American Institute of Physics") != -1:
             self.sourcename = "American Institute of Physics"
+        # elif self.sourcename.find("American Institute of Physics") != -1:
+        #     self.sourcename = "American Institute of Physics"
 
         if self.abs_url!="":
             self.pinjie=self.abs_url
