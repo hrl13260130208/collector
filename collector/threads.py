@@ -1,7 +1,7 @@
 import uuid
 import time
 import threading
-from collector import name_manager
+from collector import name_manager as nm
 from collector import htmls
 import os
 import logging
@@ -26,7 +26,7 @@ class download_url(threading.Thread):
             if string ==None:
                 self.um.set_done(self.sourcename,self.step)
                 break
-            eb=name_manager.execl_bean()
+            eb=nm.execl_bean()
             eb.paser(string)
             url=""
             if eb.sourcename == "PMC":
@@ -34,7 +34,7 @@ class download_url(threading.Thread):
             else:
                 url= eb.pinjie
 
-            jcb = name_manager.json_conf_bean(eb.sourcename, eb.eissn)
+            jcb = nm.json_conf_bean(eb.sourcename, eb.eissn)
             try:
                 if eb.full_url == "":
                     logger.info("URL_THREAD - "+self.name+" - "+self.sourcename+" get download url form: "+url)
@@ -86,10 +86,10 @@ class download(threading.Thread):
                     logger.info("PDF_THREAD - "+self.name+" - "+self.sourcename+ " wait for download...")
                     time.sleep(30)
                     continue
-            eb = name_manager.execl_bean()
+            eb = nm.execl_bean()
             eb.paser(string)
             file_path=self.creat_filename()
-            logger.info("PDF_THREAD - "+self.name+" - "+self.sourcename +" : download pdf.download url:" + eb.full_url )
+            logger.info("PDF_THREAD - "+self.name+" - "+self.sourcename +" : download pdf.download url:" + eb.full_url +" 下载页面链接："+eb.pinjie )
             try:
                 htmls.download(eb.full_url,file_path)
             except Exception :
@@ -104,18 +104,20 @@ class download(threading.Thread):
                     self.um.save(eb,self.err_step)
                 continue
 
+            logger.info("PDF_THREAD - " + self.name + " - " + self.sourcename + " :check pdf.pdf path:" +file_path)
             try:
                 eb.page=htmls.checkpdf(file_path)
             except Exception as e:
-                logger.error(self.sourcename + "check pdf ,pdf path: "+file_path+" has err,download url:"+eb.full_url,exc_info = True)
-                os.remove(file_path)
+                logger.error(self.sourcename + " check pdf ,pdf path: "+file_path+" has err,download url:"+eb.full_url+ " 下载页面链接：" + eb.pinjie,exc_info = True)
+                # os.remove(file_path)
+                self.um.save_error_pdf_name(file_path)
                 if eb.retry < collect.CHECK_PDF_RETRY:
                     logger.info("retry time:" + str(eb.retry) )
                     eb.retry += 1
                     self.um.save(eb,self.step-1)
                 else:
-                    logger.info("retry:" + str(eb.retry) + ".retry次数超过5次，不再重试。")
-                    eb.err_and_step = str(self.step) + "：pdf不完整，重下超过五次"
+                    logger.info("retry:" + str(eb.retry) + ".retry超过指定次数，不再重试。")
+                    eb.err_and_step = str(self.step) + "：pdf不完整，重下超过指定次数"
                     self.um.save(eb,self.err_step)
                 continue
             eb.full_path=file_path[8:]
@@ -149,7 +151,7 @@ class Elsevier_download(threading.Thread):
             string = self.um.get_eb(self.url_set_name)
             if string == None:
                 break
-            eb = name_manager.execl_bean()
+            eb = nm.execl_bean()
             eb.paser(string)
             url = ""
             if eb.sourcename == "PMC":
@@ -157,7 +159,7 @@ class Elsevier_download(threading.Thread):
             else:
                 url = eb.pinjie
 
-            jcb = name_manager.json_conf_bean(eb.sourcename, eb.eissn)
+            jcb =nm.json_conf_bean(eb.sourcename, eb.eissn)
             file_path = self.creat_filename()
             try:
                 logger.info(self.sourcename + "get download url form: " + url)
@@ -183,3 +185,6 @@ class Elsevier_download(threading.Thread):
             eb.abs_url = url
             eb.full_path = file_path[8:]
             self.um.save(eb, self.finsh_step)
+
+if __name__ == '__main__':
+    os.remove("C:/pdfs/gruyter0319/0dcae75e4b8011e981af00ac37466cf9.pdf")

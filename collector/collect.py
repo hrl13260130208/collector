@@ -1,5 +1,5 @@
 from collector import excel_rw
-from collector import name_manager
+from collector import name_manager as nm
 from collector import threads
 from collector import htmls
 import os
@@ -68,8 +68,8 @@ def create_dir(dir_name):
 def start(name,file_path):
     thread_list = []
 
-    um = name_manager.url_manager(name)
-    tm = name_manager.template_manager()
+    um = nm.url_manager(name)
+    tm = nm.template_manager()
     execl = excel_rw.excels(file_path, um)
     execl.write()
     um.clear()
@@ -91,8 +91,8 @@ def run_thread(name,file_path):
     # file_path="C:/temp/gruyter2018-2019待采全文的文章清单.xls"
     list = []
 
-    um = name_manager.url_manager(name)
-    tm = name_manager.template_manager()
+    um = nm.url_manager(name)
+    tm = nm.template_manager()
     execl = excel_rw.excels(file_path, um)
     execl.write()
     um.clear()
@@ -116,35 +116,47 @@ def run_thread(name,file_path):
         list.append(executor.submit(th.run))
 
     while (list.__len__() > 0):
-        time.sleep(3600)
+        time.sleep(30)
         print("++++++++++++++++")
         for li in list:
             print('==============')
             if li.done():
                 print(li.result())
                 if li.exception() != None:
+                    logger.error("程序异常，全部退出！")
+                    for li in list:
+                        li.cancel()
                     exit(0)
-                    break
                 else:
                     list.remove(li)
-
+    delte_error_pdf(um)
     execl.write()
     execl.report()
     um.clear()
 
 
+def delte_error_pdf(um):
+    while(True):
+        err_path=um.get_error_pdf_name()
+        if err_path ==None:
+            break
+        try:
+            os.remove(err_path)
+        except:
+            pass
+
 
 
 def check_task(name):
-    um = name_manager.url_manager(name)
+    um = nm.url_manager(name)
     um.query()
 
 def check_finsh_task(name):
-    um = name_manager.url_manager(name)
+    um = nm.url_manager(name)
     um.query_finsh_url()
 
 def check_conf():
-    tm=name_manager.template_manager()
+    tm=nm.template_manager()
     tm.check_confs()
 
 def test_download():
@@ -180,13 +192,14 @@ class test2(threading.Thread):
 
 if __name__ == '__main__':
 
-    name = "test"
+    name = "gruyter0319"
     #name = "yj0122"
     # name = "jx0122"
 
     #file_path = "F:/hrl/mc/0121/冶金所待补全文清单_20190121..xls"
     # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
-    file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
+    # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
+    file_path = "C:/tmp/gruyter2018-2019待采全文的文章清单.xls"
 
     #check_task(name)
     cp=htmls.config_parser()

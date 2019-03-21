@@ -9,7 +9,7 @@ from collector.errors import NoConfError
 import time
 import copy
 import urllib.parse as parse
-import progressbar
+import random
 from collector import collect
 
 fake = faker.Factory.create()
@@ -184,7 +184,7 @@ class HTML():
 header={"User-Agent": fake.user_agent(),"upgrade-insecure-requests": "1"}
 
 def get_html(url):
-    time.sleep(2)
+    time.sleep(random.random()*3+1)
     data = requests.get(url,headers=header,verify=False,timeout=20)
     data.encoding = 'utf-8'
     datatext = data.text
@@ -192,7 +192,7 @@ def get_html(url):
     return datatext
 
 def download(url, file):
-    time.sleep(2)
+    time.sleep(random.random()*3+1)
     data = requests.get(url.strip(), headers=header,verify=False,timeout=30)
     # print(data.text)
     data.encoding = 'utf-8'

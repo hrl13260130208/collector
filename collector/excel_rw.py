@@ -1,6 +1,6 @@
 import xlrd
 from  xlutils import copy
-from collector.name_manager import execl_bean,url_manager
+from collector import  name_manager
 import logging
 from collector import collect
 
@@ -40,7 +40,7 @@ class excels():
         self.create()
 
         for row in range(self.r_sheet.nrows-1):
-            eb=execl_bean()
+            eb=name_manager.execl_bean()
             eb.row_num=row+1
             eb.sourcename=self.r_sheet.cell(eb.row_num,self.nums[0]).value
             issn=self.r_sheet.cell(eb.row_num,self.nums[1]).value
@@ -77,7 +77,7 @@ class excels():
                 string = self.um.get_eb(url_name)
                 if string == None:
                     break
-                eb = execl_bean()
+                eb =name_manager.execl_bean()
                 eb.paser(string)
 
                 self.w_sheet.write(eb.row_num,self.nums[5],eb.full_url)
@@ -103,7 +103,7 @@ class excels():
 
 if __name__ == '__main__':
     name="dfsf"
-    um = url_manager(name)
+    um = name_manager.url_manager(name)
     file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/中信所待补全文清单_20181219..xls"
     ex=excels(file_path,um)
     ex.read()
