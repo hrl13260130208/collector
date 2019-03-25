@@ -167,9 +167,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://sor.scitation.org/doi/abs/10.1121/2.0000817"
+    url_="http://dx.doi.org/10.1142/S2010135X18500029"
 
-    section="American Institute of Physics_2468-2047"
+    section="World Scientific Publishing Co. Pte. Ltd._2010-135X-2010-1368"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
@@ -199,22 +199,22 @@ class test2(threading.Thread):
 
 if __name__ == '__main__':
 
-    name = "gruyter0319"
-    #name = "yj0122"
-    # name = "jx0122"
+    # name = "gruyter0319"
+    # #name = "yj0122"
+    # # name = "jx0122"
+    #
+    # #file_path = "F:/hrl/mc/0121/冶金所待补全文清单_20190121..xls"
+    # # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
+    # # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
+    # file_path = "C:/tmp/gruyter2018-2019待采全文的文章清单.xls"
+    #
+    # #check_task(name)
+    # cp=htmls.config_parser()
+    # cp.paser()
+    # run_thread(name,file_path)
+    # cp.backup()
 
-    #file_path = "F:/hrl/mc/0121/冶金所待补全文清单_20190121..xls"
-    # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
-    # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
-    file_path = "C:/tmp/gruyter2018-2019待采全文的文章清单.xls"
-
-    #check_task(name)
-    cp=htmls.config_parser()
-    cp.paser()
-    run_thread(name,file_path)
-    cp.backup()
-
-    # test_download()
+    test_download()
 
 
 

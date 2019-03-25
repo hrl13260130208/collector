@@ -181,7 +181,7 @@ class HTML():
 
 
 
-header={"User-Agent": fake.user_agent(),"upgrade-insecure-requests": "1"}
+header={"User-Agent": fake.user_agent()}
 
 def get_html(url):
     time.sleep(random.random()*3+1)
@@ -194,7 +194,7 @@ def get_html(url):
 def download(url, file):
     time.sleep(random.random()*3+1)
     data = requests.get(url.strip(), headers=header,verify=False,timeout=30)
-    # print(data.text)
+    print(data.text)
     data.encoding = 'utf-8'
     file = open(file, "wb+")
     file.write(data.content)
