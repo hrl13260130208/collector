@@ -167,9 +167,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://dx.doi.org/10.1142/S2010135X18500029"
+    url_="https://aip.scitation.org/doi/10.1063/1.5055873"
 
-    section="World Scientific Publishing Co. Pte. Ltd._2010-135X-2010-1368"
+    section="American Institute of Physics_2468-2047"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
