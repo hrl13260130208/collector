@@ -154,9 +154,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://dx.doi.org/10.1093/jcag/gwy008.067"
+    url_="https://www.future-science.com/doi/10.4155/fsoa-2017-0115"
 
-    section="Oxford University Press_2515-2084-2515-2092"
+    section="Future Science Ltd_2056-5623"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
