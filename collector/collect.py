@@ -7,7 +7,7 @@ import logging
 import requests
 import time
 import threading
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor,as_completed
 
 
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -103,6 +103,8 @@ def run_thread(name,file_path):
     for url_set_name in url_set_names:
         if url_set_name == "Elsevier":
             th = threads.Elsevier_download(url_set_name, um, tm, dir)
+        elif url_set_name == "IEEE":
+            th= threads.IEEE_download(url_set_name, um, tm, dir)
         else:
             th = threads.download_url(url_set_name, um, tm)
         fu=executor.submit(th.run)
@@ -110,25 +112,17 @@ def run_thread(name,file_path):
 
     sns = um.get_sourcenames()
     for sn in sns:
-        if sn == "Elsevier":
+        if sn == "Elsevier"or sn == "IEEE":
             continue
         th = threads.download(sn, um, dir)
         list.append(executor.submit(th.run))
 
-    while (list.__len__() > 0):
-        time.sleep(30)
-        print("++++++++++++++++")
-        for li in list:
-            print('==============')
-            if li.done():
-                print(li.result())
-                if li.exception() != None:
-                    logger.error("程序异常，全部退出！")
-                    for li in list:
-                        li.cancel()
-                    exit(0)
-                else:
-                    list.remove(li)
+    for fu in as_completed(list):
+        print(fu.result())
+        if fu.exception() != None:
+            logger.error("程序异常，全部退出！")
+            exit(0)
+
     delte_error_pdf(um)
     execl.write()
     execl.report()
@@ -160,9 +154,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://dx.doi.org/10.1515/math-2018-0003"
+    url_="http://dx.doi.org/10.1093/jcag/gwy008.067"
 
-    section="Gruyter_2391-5455"
+    section="Oxford University Press_2515-2084-2515-2092"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
@@ -191,25 +185,23 @@ class test2(threading.Thread):
         return "ddff"
 
 if __name__ == '__main__':
-    # name = "zx0311"
-    # name = "yj0122"
-    # name = "jx0122"
-    name = "pmc0319"
-    # name = "gruyter0319"
 
-    # file_path = "F:/hrl/mc/0121/冶金所待补全文清单_20190121..xls"
-    # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
-    # file_path = "F:/hrl/mc/0311/中信所待补全文清单_20190311..xls"
-    file_path = "F:/hrl/mc/other/pmc2018-2019待采全文的文章清单.xls"
-    # file_path = "F:/hrl/mc/other/gruyter2018-2019待采全文的文章清单.xls"
-
-    # check_task(name)
-    cp = htmls.config_parser()
-    cp.paser()
-    run_thread(name, file_path)
-    cp.backup()
+    # name = "test"
+    # #name = "yj0122"
+    # # name = "jx0122"
     #
-    # test_download()
+    # #file_path = "F:/hrl/mc/0121/冶金所待补全文清单_20190121..xls"
+    # # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
+    # # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
+    # file_path = "C:/temp/test.xlsx"
+    #
+    # #check_task(name)
+    # cp=htmls.config_parser()
+    # cp.paser()
+    # run_thread(name,file_path)
+    # cp.backup()
+
+    test_download()
 
 
 

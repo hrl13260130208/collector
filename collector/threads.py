@@ -3,10 +3,13 @@ import time
 import threading
 from collector import name_manager as nm
 from collector import htmls
-import os
+import requests
 import logging
 from  collector.errors import NoConfError
 from collector import collect
+import re
+import random
+from bs4 import BeautifulSoup
 
 logger = logging.getLogger("logger")
 class download_url(threading.Thread):
@@ -186,5 +189,94 @@ class Elsevier_download(threading.Thread):
             eb.full_path = file_path[8:]
             self.um.save(eb, self.finsh_step)
 
+class IEEE_download(threading.Thread):
+    def __init__(self,sourcename,um,tm,dir):
+        threading.Thread.__init__(self)
+        self.dir=dir
+        self.sourcename = sourcename
+        self.um=um
+        self.finsh_step=2
+        self.err_step = 3
+        self.tm = tm
+        self.url_step = 1
+        self.url_set_name = um.fix(sourcename, self.url_step - 1)
+
+    def creat_filename(self):
+        uid=str(uuid.uuid1())
+        suid=''.join(uid.split('-'))
+        return self.dir+suid+".pdf"
+
+    def run(self):
+        logger.info(self.sourcename + " download_url start...")
+        while (True):
+            string = self.um.get_eb(self.url_set_name)
+            if string == None:
+                break
+            eb = nm.execl_bean()
+            eb.paser(string)
+            url = eb.pinjie
+            jcb = nm.json_conf_bean(eb.sourcename, eb.eissn)
+            file_path = self.creat_filename()
+            d_url=self.get_d_url(url)
+
+            print(d_url)
+            try:
+                logger.info(self.sourcename + " get download url form: " + d_url)
+                htmls.download(d_url, file_path)
+                eb.page = htmls.checkpdf(file_path)
+            except NoConfError:
+                logger.info(eb.eissn + " 无可用的conf.")
+                eb.err_and_step = str(self.url_step) + "：  无可用的conf"
+                self.um.save(eb, self.err_step)
+            except Exception as e:
+                logger.error(self.sourcename + " download url " + url + " has err", exc_info=True)
+                if eb.retry < collect.DOWNLOAD_URL_RETRY:
+                    logger.info("retry time:" + str(eb.retry))
+                    eb.retry += 1
+                    self.um.save(eb, self.url_step - 1)
+                else:
+                    logger.info("retry:" + str(eb.retry) + ". retry次数超过5次，不再重试。")
+                    self.um.save(eb, self.err_step)
+                continue
+            eb.full_url = d_url
+            eb.abs_url = url
+            eb.full_path = file_path[8:]
+            self.um.save(eb, self.finsh_step)
+
+
+    def get_d_url(self,url):
+        time.sleep(random.random()*3+1)
+        data = requests.get(url)
+        lines = re.search("\"pdfUrl\":\".*\",", data.text).group()
+        for l in lines.split(","):
+            args = l.split(":")
+            if args.__len__() == 2:
+                if args[0].find("pdfUrl") != -1:
+                    n_url="https://ieeexplore.ieee.org"+args[1][1:-1]
+                    time.sleep(random.random() * 3 + 1)
+                    n_data = requests.get(n_url)
+                    soup = BeautifulSoup(n_data.text, "html.parser")
+                    iframe = soup.find("iframe")
+                    return iframe["src"]
+
+
+
+
+
+
+
 if __name__ == '__main__':
-    os.remove("C:/pdfs/gruyter0319/0dcae75e4b8011e981af00ac37466cf9.pdf")
+    url="https://ieeexplore.ieee.org/document/8353939/"
+    data = requests.get(url)
+    lines = re.search("\"pdfUrl\":\".*\",", data.text).group()
+    for l in lines.split(","):
+        args = l.split(":")
+        if args.__len__() == 2:
+            if args[0].find("pdfUrl") != -1:
+                n_url = "https://ieeexplore.ieee.org" + args[1][1:-1]
+                time.sleep(random.random() * 3 + 1)
+                n_data = requests.get(n_url)
+                soup=BeautifulSoup(n_data.text,"html.parser")
+                iframe=soup.find("iframe")
+                print(iframe["src"])
+
