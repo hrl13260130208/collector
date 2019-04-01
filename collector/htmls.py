@@ -37,11 +37,11 @@ class config_parser():
         return  HTML(None,None,None).test(conf_test,url)
 
     def get_section(self,section):
-        self.conf.read(self.file_name)
+        self.conf.read(self.file_name,encoding="utf-8")
         return self.conf.items(section)
 
     def paser(self):
-        self.conf.read(self.file_name)
+        self.conf.read(self.file_name,encoding="utf-8")
         sections=self.conf.sections()
         for section in sections:
             rne=section.split("_")
@@ -117,47 +117,135 @@ class HTML():
 
 
     def do_run(self,conf,url):
-        url_s=""
-        url_num = 0
-        html = get_html(url)
-        # print(html)
-        soup = BeautifulSoup(html, "html.parser")
         conf.sort()
-        last = conf[conf.__len__() - 1]
-        if last[0].find("url") != -1:
-            temp_s=last[0].split("_")
-            if temp_s.__len__() !=1:
-                url_num=int(temp_s[1])
-            url_s = last[1]
-            conf.remove(last)
-        return self.run_url(url_s, url_num, conf, soup)
+        for li in conf:
+            if li[0]=="type":
+                if li[1]=="1":
+                    conf.remove(li)
+                    return self.type_1(conf,url)
+                elif li[1]=="2":
+                    conf.remove(li)
+                    return self.type_2(conf, url)
+        return self.type_default(conf,url)
 
-    def run_url(self,url_s,url_num,conf,soup):
-        first =conf[0]
-        url = self.get_url(first[1],soup)
-        conf.remove(first)
-        logger.debug("url : "+url)
-        if conf.__len__() == 0:
+    def type_1(self,conf,url):
+        return type_1_parser(conf,url).run()
+
+
+    def type_2(self,conf,url):
+        print("_______________")
+
+    def type_default(self,conf,url):
+        print("=++")
+        return  type_default_parser(conf,url).run()
+        # url_s = ""
+        # url_num = 0
+        # html = get_html(url)
+        # soup = BeautifulSoup(html, "html.parser")
+        # last = conf[conf.__len__() - 1]
+        # if last[0].find("url") != -1:
+        #     temp_s = last[0].split("_")
+        #     if temp_s.__len__() != 1:
+        #         url_num = int(temp_s[1])
+        #     url_s = last[1]
+        #     conf.remove(last)
+        # return self.run_url(url_s, url_num, conf, soup)
+
+
+
+    def get_url(self,string,soup):
+        pass
+
+
+
+
+class common_type_parser:
+    def __init__(self, conf, url):
+        self.conf = conf
+        self.url = url
+
+    def run(self):
+        url_s = ""
+        url_num = 0
+        last = self.conf[self.conf.__len__() - 1]
+        if last[0].find("url") != -1:
+            temp_s = last[0].split("_")
+            if temp_s.__len__() != 1:
+                url_num = int(temp_s[1])
+            url_s = last[1]
+            self.conf.remove(last)
+        return self.run_url(url_s, url_num,self.url)
+
+    def run_url(self, url_s, url_num,s_url):
+        first = self.conf[0]
+        html = get_html(s_url)
+        soup = BeautifulSoup(html, "html.parser")
+        url = self.get_url(first[1], soup)
+        self.conf.remove(first)
+        logger.debug("url : " + url)
+        if self.conf.__len__() == 0:
 
             if url_num == 0:
-                return url_s+url
+                return url_s + url
             else:
                 return url
         else:
             if int(first[0]) == url_num:
-                html = get_html(url_s+url)
+                n_url=url_s + url
             else:
-                html = get_html(url)
-            new_soup = BeautifulSoup(html, "html.parser")
-            return  self.run_url(url_s,url_num,conf,new_soup)
+                n_url=url
+            return self.run_url(url_s, url_num,n_url)
+    def get_url(self,line,soup):
+        pass
 
-    def get_url(self,string,soup):
-        strs=string.split(";")
-        logger.debug("Strings split by ; is : "+str(strs))
-        tag=self.find(strs,soup)
-        if tag.name=="a":
+
+class type_1_parser(common_type_parser):
+
+    def get_url(self,line,soup):
+        strs = line.split(";")
+        logger.debug("Strings split by ; is : " + str(strs))
+        tag = self.find(strs, soup)
+        if tag.name == "a":
             return tag["href"]
-        elif tag.name=="input":
+
+    def find(self, strs, soup):
+        first_args = strs[0]
+        args = first_args.split(",")
+        tag=None
+        if args.__len__()==4:
+            tags = soup.find_all(args[0], attrs={args[1]: args[2]})
+            for t in tags:
+                print(t.get_text().lower())
+                if args[3].lower() in t.get_text().strip().lower():
+                    tag=t
+        elif args.__len__()==2:
+            tags = soup.find_all(args[0])
+            for t in tags:
+                if args[1].lower() in  t.get_text().strip().lower() :
+                    tag = t
+        else:
+            tag = soup.find(args[0], attrs={args[1]: args[2]})
+        # logger.debug("find result: ")
+        # print("______________",tag)
+        strs.remove(first_args)
+        if tag ==None:
+            raise ValueError("tag不能为空！")
+        if strs.__len__() == 0:
+            return tag
+        else:
+            return self.find(strs, tag)
+
+
+
+
+class type_default_parser(common_type_parser):
+    def get_url(self,line,soup):
+        strs = line.split(";")
+        logger.debug("Strings split by ; is : " + str(strs))
+        tag = self.find(strs, soup)
+        if tag.name == "a":
+            return tag["href"]
+        elif tag.name == "input":
             return parse.unquote(tag["value"])
         elif tag.name == "link":
             return tag["href"]
@@ -166,18 +254,19 @@ class HTML():
         else:
             return tag.find("a")["href"]
 
-    def find(self,strs,soup):
-        first_args=strs[0]
-        args=first_args.split(",")
+    def find(self, strs, soup):
+        first_args = strs[0]
+        args = first_args.split(",")
         # print(soup)
-        logger.debug("Strings split by , is : "+ str(args))
-        tag=soup.find(args[0],attrs={args[1]:args[2]})
+        logger.debug("Strings split by , is : " + str(args))
+        tag = soup.find(args[0], attrs={args[1]: args[2]})
         # logger.debug("find result: ")
         strs.remove(first_args)
         if strs.__len__() == 0:
             return tag
         else:
-            return  self.find(strs,tag)
+            return self.find(strs, tag)
+
 
 
 
@@ -194,7 +283,7 @@ def get_html(url):
 def download(url, file):
     time.sleep(random.random()*3+1)
     data = requests.get(url.strip(), headers=header,verify=False,timeout=30)
-    print(data.text)
+    # print(data.text)
     data.encoding = 'utf-8'
     file = open(file, "wb+")
     file.write(data.content)
@@ -210,16 +299,9 @@ def checkpdf(file):
 
 
 if __name__ == '__main__':
-   pass
 
-    # url="http://dx.doi.org/10.1007/s13753-018-0205-6"
-    # url2="http://dx.doi.org/10.1007/s13753-018-0199-0"
-    # cp=config_parser()
-    # # res=cp.get_section("Gruyter_2255-8683-2255-8691")
-    # print(cp.test("Springer_2199-6687-2199-6679",url2))
-    # url="https%3A%2F%2Fasian-nursingresearch.com%2Fretrieve%2Fpii%2FS1976131718301245"
-    # url=parse.unquote(url)
-    # print(url)
-    # print(get_html(url))
-
+    cp=config_parser()
+    res=cp.get_section("test")
+    url=HTML(None, None, None).do_run(res,"http://www.aed.org.cn/nyzyyhjxb/html/2018/2/20180205.htm")
+    print(url)
 

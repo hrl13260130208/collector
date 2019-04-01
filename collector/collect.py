@@ -154,9 +154,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://dx.doi.org/10.1093/jcag/gwy008.067"
+    url_="http://www.aed.org.cn/nyzyyhjxb/html/2018/2/20180205.htm"
 
-    section="Oxford University Press_2515-2084-2515-2092"
+    section="test"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
@@ -165,43 +165,25 @@ def test_download():
     print(htmls.checkpdf(test_file))
 
 
-
-
-class test(threading.Thread):
-    def run(self):
-
-        print(self.name+"  ",time.time())
-        time.sleep(10)
-        return "dsf"
-
-
-
-class test2(threading.Thread):
-    def run(self):
-
-        print(self.name+"  ",time.time())
-        time.sleep(5)
-        a=1/0
-        return "ddff"
-
 if __name__ == '__main__':
 
-    # name = "test"
-    # #name = "yj0122"
-    # # name = "jx0122"
-    #
-    # #file_path = "F:/hrl/mc/0121/冶金所待补全文清单_20190121..xls"
-    # # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
-    # # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
-    # file_path = "C:/temp/test.xlsx"
-    #
-    # #check_task(name)
-    # cp=htmls.config_parser()
-    # cp.paser()
-    # run_thread(name,file_path)
-    # cp.backup()
+    name = "test"
+    # name = "yj0329"
+    # name = "jx0122"
 
-    test_download()
+    # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/0329/冶金所待补全文清单_20190329..xls"
+    # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
+
+    # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
+    file_path = "C:/temp/test.xls"
+
+    #check_task(name)
+    cp=htmls.config_parser()
+    cp.paser()
+    run_thread(name,file_path)
+    cp.backup()
+
+    # test_download()
 
 
 
