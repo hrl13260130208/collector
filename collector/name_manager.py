@@ -221,6 +221,7 @@ class url_manager():
             else:
                 print("正在解析下载链接...")
                 print("链接剩余数量："+str(redis_.llen(self.fix(sn,download_url_step-1))))
+                print("解析完成PDF链接剩余数：" + str(redis_.llen(self.fix(sn, download_pdf_step - 1))))
 
     def query_finsh_url(self):
         for sn in self.get_sourcenames():
@@ -229,7 +230,7 @@ class url_manager():
 
 
 if __name__ == '__main__':
-    # for key in redis_.keys("zx0122*"):
+    # for key in redis_.keys("*"):
     #     # redis_.delete(key)
     #     # print(key ,redis_.type(key))
     #     if redis_.type(key) == "string":
@@ -240,8 +241,8 @@ if __name__ == '__main__':
     #         print(key ," : ",redis_.llen(key)," : ", redis_.lrange(key,0,100))
     #
 
-    collect.check_task("pmc0319")
-    collect.check_finsh_task("pmc0319")
+    collect.check_task("gruyter0319")
+    collect.check_finsh_task("gruyter0319")
 
 
     # collect.check_conf()
