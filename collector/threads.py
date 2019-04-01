@@ -217,10 +217,11 @@ class IEEE_download(threading.Thread):
             url = eb.pinjie
             jcb = nm.json_conf_bean(eb.sourcename, eb.eissn)
             file_path = self.creat_filename()
-            d_url=self.get_d_url(url)
 
-            # print(d_url)
             try:
+                d_url = self.get_d_url(url)
+
+                print(d_url)
                 logger.info(self.sourcename + " get download url form: " + d_url)
                 htmls.download(d_url, file_path)
                 eb.page = htmls.checkpdf(file_path)

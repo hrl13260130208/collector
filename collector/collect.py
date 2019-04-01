@@ -154,9 +154,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://dx.doi.org/10.5755/j01.mech.24.5.19937"
+    url_="http://www.tribology.rs/journals/2018/2018-4/2018-4-08.html"
 
-    section="Paper_Data_1392-1207-2029-6983"
+    section="Doaj_0354-8996-2217-7965"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
@@ -165,35 +165,17 @@ def test_download():
     print(htmls.checkpdf(test_file))
 
 
-
-
-class test(threading.Thread):
-    def run(self):
-
-        print(self.name+"  ",time.time())
-        time.sleep(10)
-        return "dsf"
-
-
-
-class test2(threading.Thread):
-    def run(self):
-
-        print(self.name+"  ",time.time())
-        time.sleep(5)
-        a=1/0
-        return "ddff"
-
 if __name__ == '__main__':
 
     # name = "test"
-    # #name = "yj0122"
+    # # name = "yj0329"
     # # name = "jx0122"
     #
-    # #file_path = "F:/hrl/mc/0121/冶金所待补全文清单_20190121..xls"
+    # # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/0329/冶金所待补全文清单_20190329..xls"
     # # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
+    #
     # # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
-    # file_path = "C:/temp/test.xlsx"
+    # file_path = "C:/temp/test.xls"
     #
     # #check_task(name)
     # cp=htmls.config_parser()
