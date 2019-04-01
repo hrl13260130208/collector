@@ -219,7 +219,7 @@ class IEEE_download(threading.Thread):
             file_path = self.creat_filename()
             d_url=self.get_d_url(url)
 
-            print(d_url)
+            # print(d_url)
             try:
                 logger.info(self.sourcename + " get download url form: " + d_url)
                 htmls.download(d_url, file_path)
