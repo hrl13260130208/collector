@@ -95,6 +95,7 @@ def run_thread(name,file_path):
     tm = nm.template_manager()
     execl = excel_rw.excels(file_path, um)
     execl.write()
+    delte_error_pdf(um)
     um.clear()
     execl.read()
     dir = create_dir(name)
