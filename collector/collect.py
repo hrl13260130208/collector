@@ -93,7 +93,6 @@ def run_thread(name,file_path):
 
     um = nm.url_manager(name)
     tm = nm.template_manager()
-    # delte_error_pdf(um)
     execl = excel_rw.excels(file_path, um)
     execl.write()
     delte_error_pdf(um)
@@ -125,7 +124,7 @@ def run_thread(name,file_path):
             logger.error("程序异常，全部退出！")
             exit(0)
 
-    # delte_error_pdf(um)
+    delte_error_pdf(um)
     execl.write()
     execl.report()
     um.clear()
@@ -157,9 +156,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://www.tribology.rs/journals/2018/2018-4/2018-4-08.html"
+    url_="http://advances.utc.sk/index.php/AEEE/article/view/2698"
 
-    section="Doaj_0354-8996-2217-7965"
+    section="Doaj_1336-1376-1804-3119"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
@@ -169,7 +168,7 @@ def test_download():
 
 
 if __name__ == '__main__':
-
+    #
     # name = "test"
     # # name = "yj0329"
     # # name = "jx0122"

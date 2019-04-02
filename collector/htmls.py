@@ -178,7 +178,7 @@ class common_type_parser:
 
     def run_url(self, url_s, url_num,s_url):
         first = self.conf[0]
-        html = get_html(s_url)
+        html,url_p = get_html(s_url)
         soup = BeautifulSoup(html, "html.parser")
         url = self.get_url(first[1], soup)
         self.conf.remove(first)
@@ -186,6 +186,13 @@ class common_type_parser:
         if self.conf.__len__() == 0:
 
             if url_num == 0:
+                if url_s =="default":
+
+                    if "com" in url_p:
+                        num = url_p.find(".com")
+                    elif "org" in url_p:
+                        num = url_p.find(".org")
+                    url_s = url_p[:num + 4]
                 return url_s + url
             else:
                 return url
@@ -278,7 +285,7 @@ def get_html(url):
     data.encoding = 'utf-8'
     datatext = data.text
     data.close()
-    return datatext
+    return datatext,data.url
 
 def download(url, file):
     time.sleep(random.random()*3+1)
