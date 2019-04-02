@@ -96,6 +96,7 @@ def run_thread(name,file_path):
     # delte_error_pdf(um)
     execl = excel_rw.excels(file_path, um)
     execl.write()
+    delte_error_pdf(um)
     um.clear()
     execl.read()
     dir = create_dir(name)
@@ -156,9 +157,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://www.aed.org.cn/nyzyyhjxb/html/2018/2/20180205.htm"
+    url_="http://www.tribology.rs/journals/2018/2018-4/2018-4-08.html"
 
-    section="test"
+    section="Doaj_0354-8996-2217-7965"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
@@ -169,23 +170,23 @@ def test_download():
 
 if __name__ == '__main__':
 
-    name = "test"
-    # name = "yj0329"
-    # name = "jx0122"
+    # name = "test"
+    # # name = "yj0329"
+    # # name = "jx0122"
+    #
+    # # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/0329/冶金所待补全文清单_20190329..xls"
+    # # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
+    #
+    # # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
+    # file_path = "C:/temp/test.xls"
+    #
+    # #check_task(name)
+    # cp=htmls.config_parser()
+    # cp.paser()
+    # run_thread(name,file_path)
+    # cp.backup()
 
-    # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/0329/冶金所待补全文清单_20190329..xls"
-    # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
-
-    # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
-    file_path = "C:/temp/test.xls"
-
-    #check_task(name)
-    cp=htmls.config_parser()
-    cp.paser()
-    run_thread(name,file_path)
-    cp.backup()
-
-    # test_download()
+    test_download()
 
 
 

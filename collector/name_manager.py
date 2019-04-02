@@ -119,7 +119,10 @@ class execl_bean():
             self.sourcename = "IEEE"
         elif self.sourcename.find("IET Digital Library") != -1:
             self.sourcename = "IEEE"
+        elif "IOP Publish" in self.sourcename:
+            self.sourcename="IOP Publish"
 
+        self.sourcename.replace("_","")
         if self.abs_url!="":
             self.pinjie=self.abs_url
 
