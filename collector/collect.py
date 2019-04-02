@@ -93,6 +93,7 @@ def run_thread(name,file_path):
 
     um = nm.url_manager(name)
     tm = nm.template_manager()
+    # delte_error_pdf(um)
     execl = excel_rw.excels(file_path, um)
     execl.write()
     um.clear()
@@ -123,13 +124,14 @@ def run_thread(name,file_path):
             logger.error("程序异常，全部退出！")
             exit(0)
 
-    delte_error_pdf(um)
+    # delte_error_pdf(um)
     execl.write()
     execl.report()
     um.clear()
 
 
 def delte_error_pdf(um):
+    logger.info("删除下载错误的pdf")
     while(True):
         err_path=um.get_error_pdf_name()
         if err_path ==None:

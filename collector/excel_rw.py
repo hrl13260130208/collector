@@ -3,6 +3,7 @@ from  xlutils import copy
 from collector import  name_manager
 import logging
 from collector import collect
+import os
 
 
 
@@ -79,11 +80,12 @@ class excels():
                     break
                 eb =name_manager.execl_bean()
                 eb.paser(string)
+                if os.path.exists(collect.first_dir+eb.full_path):
+                    self.w_sheet.write(eb.row_num,self.nums[5],eb.full_url)
+                    self.w_sheet.write(eb.row_num,self.nums[6],eb.abs_url)
 
-                self.w_sheet.write(eb.row_num,self.nums[5],eb.full_url)
-                self.w_sheet.write(eb.row_num,self.nums[6],eb.abs_url)
-                self.w_sheet.write(eb.row_num,self.nums[7],eb.full_path)
-                self.w_sheet.write(eb.row_num,self.nums[7]+1,eb.page)
+                    self.w_sheet.write(eb.row_num,self.nums[7],eb.full_path)
+                    self.w_sheet.write(eb.row_num,self.nums[7]+1,eb.page)
 
         self.wb.save(self.file_path)
         logger.info("Excel写入完成。")
