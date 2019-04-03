@@ -173,7 +173,7 @@ class url_manager():
         self.DONE="True"
 
     def error_pdf_list_name(self):
-        return  "error_pdfs"
+        return  self.name+"_error_pdfs"
 
     def save_error_pdf_name(self,path):
         return  redis_.lpush(self.error_pdf_list_name(),path)
