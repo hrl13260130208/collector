@@ -94,8 +94,8 @@ def run_thread(name,file_path):
     um = nm.url_manager(name)
     tm = nm.template_manager()
     execl = excel_rw.excels(file_path, um)
-    execl.write()
     delte_error_pdf(um)
+    execl.write()
     um.clear()
     execl.read()
     dir = create_dir(name)
@@ -119,7 +119,7 @@ def run_thread(name,file_path):
         list.append(executor.submit(th.run))
 
     for fu in as_completed(list):
-        print(fu.result())
+        # print(fu.result())
         if fu.exception() != None:
             logger.error("程序异常，全部退出！")
             exit(0)
@@ -131,12 +131,13 @@ def run_thread(name,file_path):
 
 
 def delte_error_pdf(um):
-    logger.info("删除下载错误的pdf")
+    logger.info("删除下载错误的pdf...")
     while(True):
         err_path=um.get_error_pdf_name()
         if err_path ==None:
             break
         try:
+            logger.info("pdf路径："+err_path)
             os.remove(err_path)
         except:
             pass
@@ -156,19 +157,20 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://advances.utc.sk/index.php/AEEE/article/view/2698"
-
-    section="Doaj_1336-1376-1804-3119"
-    cp=htmls.config_parser()
-    cp.get_section(section)
-    d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
+    # url_="http://dx.doi.org/10.15414/raae.2018.21.01.03-09"
+    #
+    # section="Doaj_1336-9261"
+    # cp=htmls.config_parser()
+    # cp.get_section(section)
+    # d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
+    d_url="http://www.ejmanager.com/fulltextpdf.php?mno=298304"
     print(d_url)
     htmls.download(d_url.strip(),test_file)
     print(htmls.checkpdf(test_file))
 
 
 if __name__ == '__main__':
-    #
+
     # name = "test"
     # # name = "yj0329"
     # # name = "jx0122"

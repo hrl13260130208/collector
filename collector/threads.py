@@ -221,7 +221,7 @@ class IEEE_download(threading.Thread):
             try:
                 d_url = self.get_d_url(url)
 
-                print(d_url)
+                # print(d_url)
                 logger.info(self.sourcename + " get download url form: " + d_url)
                 htmls.download(d_url, file_path)
                 eb.page = htmls.checkpdf(file_path)
@@ -267,17 +267,20 @@ class IEEE_download(threading.Thread):
 
 
 if __name__ == '__main__':
-    url="https://ieeexplore.ieee.org/document/8353939/"
-    data = requests.get(url)
-    lines = re.search("\"pdfUrl\":\".*\",", data.text).group()
-    for l in lines.split(","):
-        args = l.split(":")
-        if args.__len__() == 2:
-            if args[0].find("pdfUrl") != -1:
-                n_url = "https://ieeexplore.ieee.org" + args[1][1:-1]
-                time.sleep(random.random() * 3 + 1)
-                n_data = requests.get(n_url)
-                soup=BeautifulSoup(n_data.text,"html.parser")
-                iframe=soup.find("iframe")
-                print(iframe["src"])
+
+    pass
+
+    # url="https://ieeexplore.ieee.org/document/8353939/"
+    # data = requests.get(url)
+    # lines = re.search("\"pdfUrl\":\".*\",", data.text).group()
+    # for l in lines.split(","):
+    #     args = l.split(":")
+    #     if args.__len__() == 2:
+    #         if args[0].find("pdfUrl") != -1:
+    #             n_url = "https://ieeexplore.ieee.org" + args[1][1:-1]
+    #             time.sleep(random.random() * 3 + 1)
+    #             n_data = requests.get(n_url)
+    #             soup=BeautifulSoup(n_data.text,"html.parser")
+    #             iframe=soup.find("iframe")
+    #             print(iframe["src"])
 

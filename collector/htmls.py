@@ -136,7 +136,7 @@ class HTML():
         print("_______________")
 
     def type_default(self,conf,url):
-        print("=++")
+        # print("=++")
         return  type_default_parser(conf,url).run()
         # url_s = ""
         # url_num = 0
@@ -222,7 +222,7 @@ class type_1_parser(common_type_parser):
         if args.__len__()==4:
             tags = soup.find_all(args[0], attrs={args[1]: args[2]})
             for t in tags:
-                print(t.get_text().lower())
+                # print(t.get_text().lower())
                 if args[3].lower() in t.get_text().strip().lower():
                     tag=t
         elif args.__len__()==2:
@@ -290,7 +290,7 @@ def get_html(url):
 def download(url, file):
     time.sleep(random.random()*3+1)
     data = requests.get(url.strip(), headers=header,verify=False,timeout=30)
-    # print(data.text)
+    print(data.text)
     data.encoding = 'utf-8'
     file = open(file, "wb+")
     file.write(data.content)

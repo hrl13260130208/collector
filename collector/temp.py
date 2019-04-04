@@ -19,7 +19,7 @@ if __name__ == '__main__':
     # file_path = "F:/hrl/mc/0311/中信所待补全文清单_20190311..xls"
     # file_path = "F:/hrl/mc/other/pmc2018-2019待采全文的文章清单.xls"
     # file_path = "F:/hrl/mc/other/gruyter2018-2019待采全文的文章清单.xls"
-    file_path = "F:/hrl/mc/other/doaj2018-2019待采全文的文章清单.xls"
+    file_path = "C:/temp/other/doaj2018-2019待采全文的文章清单.xls"
 
     # check_task(name)
     cp = htmls.config_parser()
