@@ -11,6 +11,9 @@ fake = faker.Factory.create()
 
 first_dir = "C:/pdfs/"
 redis_ = redis.Redis(host="10.3.1.99", port=6379 ,decode_responses=True)
+finsh_name="t_download"
+delete_name="delete"
+url_dict="urls_dict"
 
 def create_dir(dir_name):
     # first_dir = "F:/pdfs/"
@@ -51,35 +54,41 @@ def download():
                 if p != None:
                     pdf_url=p.group()[15:-2]
             print("测试url:"+pdf_url)
-            try:
-                pdf = requests.get(pdf_url, headers=header, verify=False, timeout=30)
-            except:
+            if redis_.sadd(url_dict,pdf_url) ==1:
+                try:
+                    pdf = requests.get(pdf_url, headers=header, verify=False, timeout=30)
+                except:
 
-                pdf_url=url[:url.rfind("/")]+u["href"][1:]
-                print("新url:"+pdf_url)
-                pdf=requests.get(pdf_url, headers=header, verify=False, timeout=30)
-            pdf.encoding = 'utf-8'
-            file_name=creat_filename(create_dir("0410"))
-            file = open(file_name, "wb+")
-            file.write(data.content)
-            page=-1
-            try:
-                page=checkpdf(file_name)
-            except:
-                print("链接有误！")
-                os.remove(file_name)
-
-            if page>0:
-                print("已下载数据： "+pdf_url+"  "+file_name)
-                redis_.lpush("t_download",pdf_url+" "+file_name)
+                    pdf_url=url[:url.rfind("/")]+u["href"][1:]
+                    print("新url:"+pdf_url)
+                    pdf=requests.get(pdf_url, headers=header, verify=False, timeout=30)
+                pdf.encoding = 'utf-8'
+                file_name=creat_filename(create_dir("0410"))
+                file = open(file_name, "wb+")
+                file.write(data.content)
+                page=-1
+                try:
+                    page=checkpdf(file_name)
+                except:
+                    print("链接有误！")
+                    redis_.lpush(delete_name,file_name)
+                if page>0:
+                    print("已下载数据： "+pdf_url+"  "+file_name)
+                    redis_.lpush("t_download",pdf_url+" "+file_name)
 
     print("链接已完成，开始写数据...")
     write_file=open("C:/pdfs/list.txt","a+")
+
     while(True):
-        string = redis_.lpop("t_download")
+        string = redis_.lpop(finsh_name)
         if string == None:
             break
         write_file.write(string+"\n")
+    while(True):
+        string = redis_.lpop(delete_name)
+        if string == None:
+            break
+        os.remove(string)
 
     write_file.close()
 
@@ -87,7 +96,9 @@ def download():
 
 if __name__ == '__main__':
     download()
-    # print(redis_.llen("t_download"))
-    # redis_.delete("t_download")
-
+    # print(redis_.sadd(url_dict)
+    # print(redis_.llen(finsh_name))
+    # print(redis_.smembers(url_dict))
+    # redis_.delete(finsh_name)
+    # redis_.delete(url_dict)
 
