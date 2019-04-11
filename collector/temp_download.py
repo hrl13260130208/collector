@@ -50,10 +50,13 @@ def download():
                 p = re.search("location\.href='.*';", str(u))
                 if p != None:
                     pdf_url=p.group()[15:-2]
-            pdf = requests.get(pdf_url, headers=header, verify=False, timeout=30)
+            print("测试url:"+pdf_url)
+            try:
+                pdf = requests.get(pdf_url, headers=header, verify=False, timeout=30)
+            except:
 
-            if pdf.status_code != 200:
-                pdf_url=url[:url.rfind("/")]+u["href"]
+                pdf_url=url[:url.rfind("/")]+u["href"][1:]
+                print("新url:"+pdf_url)
                 pdf=requests.get(pdf_url, headers=header, verify=False, timeout=30)
             pdf.encoding = 'utf-8'
             file_name=creat_filename(create_dir("0410"))
@@ -63,10 +66,14 @@ def download():
             try:
                 page=checkpdf(file_name)
             except:
-                pass
+                print("链接有误！")
+                os.remove(file_name)
+
             if page>0:
+                print("已下载数据： "+pdf_url+"  "+file_name)
                 redis_.lpush("t_download",pdf_url+" "+file_name)
 
+    print("链接已完成，开始写数据...")
     write_file=open("C:/pdfs/list.txt","a+")
     while(True):
         string = redis_.lpop("t_download")
@@ -78,21 +85,9 @@ def download():
 
 
 
-
-
-
-
-print(creat_filename(create_dir("d")))
-
 if __name__ == '__main__':
-    # download()
-    url="https://j-nav.org/presentation-paper/presentation-paper-2017-2/"
-    data = requests.get(url, headers=header, timeout=20)
-    soup = BeautifulSoup(data.text, "html.parser")
-    for u in soup.find_all("a"):
-        pdf_url = u["href"]
-        if pdf_url == "#":
-            p=re.search("location\.href='.*';",str(u))
-            if p!=None:
-                print(p.group()[15:-2])
+    download()
+    # print(redis_.llen("t_download"))
+    # redis_.delete("t_download")
+
 
