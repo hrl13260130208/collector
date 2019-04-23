@@ -1,33 +1,52 @@
-import collector.collect as collect
-import collector.htmls as htmls
+#!/usr/bin/python
+#-*- coding: utf-8 -*-
 
+from pdfminer.converter import PDFPageAggregator
+from pdfminer.pdfparser import PDFParser
+from pdfminer.pdfdocument import PDFDocument
+from pdfminer.pdfpage import PDFPage
+from pdfminer.pdfpage import PDFTextExtractionNotAllowed
+from pdfminer.pdfinterp import PDFResourceManager
+from pdfminer.pdfinterp import PDFPageInterpreter
+from pdfminer.layout import *
+import re
 
+#打开一个pdf文件
+fp = open("C:/File/GOtNEOBCKt5N.pdf", 'rb')
+#创建一个PDF文档解析器对象
+parser = PDFParser(fp)
+#创建一个PDF文档对象存储文档结构
+#提供密码初始化，没有就不用传该参数
+#document = PDFDocument(parser, password)
+document = PDFDocument(parser)
+#检查文件是否允许文本提取
+if not document.is_extractable:
+    raise PDFTextExtractionNotAllowed
+#创建一个PDF资源管理器对象来存储共享资源
+#caching = False不缓存
+rsrcmgr = PDFResourceManager(caching = False)
+# 创建一个PDF设备对象
+laparams = LAParams()
+# 创建一个PDF页面聚合对象
+device = PDFPageAggregator(rsrcmgr, laparams=laparams)
+#创建一个PDF解析器对象
+interpreter = PDFPageInterpreter(rsrcmgr, device)
+#处理文档当中的每个页面
 
-# redis_ = redis.Redis(host="10.3.1.99", port=6379, db=1,decode_responses=True)
-# print(redis_.keys("*"))
-
-if __name__ == '__main__':
-    # name = "zx0311"
-    # name = "yj0122"
-    # name = "jx0122"
-    # name = "pmc0319"
-    # name = "gruyter0319"
-    name = "other0319"
-    # name = "doaj0319"
-
-    # file_path = "F:/hrl/mc/0121/冶金所待补全文清单_20190121..xls"
-    # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
-    # file_path = "F:/hrl/mc/0311/中信所待补全文清单_20190311..xls"
-    # file_path = "F:/hrl/mc/other/pmc2018-2019待采全文的文章清单.xls"
-    # file_path = "F:/hrl/mc/other/gruyter2018-2019待采全文的文章清单.xls"
-    file_path = "C:/temp/other/其他2018-2019待采全文的文章清单.xls"
-    # file_path = "F:/hrl/mc/other/doaj2018-2019待采全文的文章清单.xls"
-
-    # check_task(name)
-    cp = htmls.config_parser()
-    cp.paser()
-    collect.run_thread(name, file_path)
-    cp.backup()
-
-
-    # collect.test_download()
+# doc.get_pages() 获取page列表
+#for i, page in enumerate(document.get_pages()):
+#PDFPage.create_pages(document) 获取page列表的另一种方式
+replace=re.compile(r'\s+')
+# 循环遍历列表，每次处理一个page的内容
+for page in PDFPage.create_pages(document):
+    interpreter.process_page(page)
+    # 接受该页面的LTPage对象
+    layout=device.get_result()
+    # 这里layout是一个LTPage对象 里面存放着 这个page解析出的各种对象
+    # 一般包括LTTextBox, LTFigure, LTImage, LTTextBoxHorizontal 等等
+    for x in layout:
+        #如果x是水平文本对象的话
+        if(isinstance(x,LTTextBoxHorizontal)):
+            text=re.sub(replace,'',x.get_text())
+            if len(text)>100:
+                print (text.__len__(),text)

@@ -38,12 +38,17 @@ class download_url(threading.Thread):
                 url= eb.pinjie
 
             jcb = nm.json_conf_bean(eb.sourcename, eb.eissn)
+            html_=htmls.HTML(eb,jcb,self.tm)
             try:
                 if eb.full_url == "":
                     logger.info("URL_THREAD - "+self.name+" - "+self.sourcename+" get download url form: "+url)
-                    full_url=htmls.HTML(eb,jcb,self.tm).run(url)
+                    full_url=html_.run(url)
                 else:
-                    full_url=eb.full_url
+                    if html_.test_full_url(eb.full_url):
+                        full_url=eb.full_url
+                    else:
+                        full_url = html_.run(url)
+
             except NoConfError:
                 logger.info(eb.sourcename+" "+eb.eissn+" 无可用的conf.")
                 eb.err_and_step=str(self.step)+"：  无可用的conf"

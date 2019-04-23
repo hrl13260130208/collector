@@ -12,14 +12,14 @@ if __name__ == '__main__':
     # name = "jx0122"
     # name = "pmc0319"
     # name = "gruyter0319"
-    name = "doaj0319"
+    name = "pmc0419"
 
     # file_path = "F:/hrl/mc/0121/冶金所待补全文清单_20190121..xls"
     # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
     # file_path = "F:/hrl/mc/0311/中信所待补全文清单_20190311..xls"
     # file_path = "F:/hrl/mc/other/pmc2018-2019待采全文的文章清单.xls"
     # file_path = "F:/hrl/mc/other/gruyter2018-2019待采全文的文章清单.xls"
-    file_path = "C:/temp/other/doaj2018-2019待采全文的文章清单.xls"
+    file_path = "C:/execl/0418/大回溯待采全文-pmc7788.xls"
 
     # check_task(name)
     cp = htmls.config_parser()

@@ -11,6 +11,7 @@ import copy
 import urllib.parse as parse
 import random
 from collector import collect
+import pdfminer
 
 fake = faker.Factory.create()
 
@@ -45,9 +46,13 @@ class config_parser():
         sections=self.conf.sections()
         for section in sections:
             rne=section.split("_")
-            jcb=name_manager.json_conf_bean(rne[0],rne[1])
-            jcb.set_conf(self.conf.items(section))
-            self.tm.save(jcb)
+            if rne[0]=="common":
+                self.tm.save_common_conf(self.conf.items(section))
+            else:
+                jcb=name_manager.json_conf_bean(rne[0],rne[1])
+                jcb.set_conf(self.conf.items(section))
+                self.tm.save(jcb)
+
     def backup(self):
         file=open(self.backup_file,"w+")
         for sourcename in self.tm.get_conf_name():
@@ -79,21 +84,28 @@ class HTML():
             logger.info("load secuess")
             return self.do_run(self.jcb.conf,url)
         else:
-            logger.info("load faild, start find a conf from default.")
+            logger.info("load faild,test default confs...")
             confs=self.tm.get_default(self.jcb)
-
-            logger.debug(self.jcb.get_sourcename()+" default: "+str(confs))
-
             for conf in confs:
                 new_jcb=name_manager.json_conf_bean(self.jcb.get_sourcename(),self.eb.eissn)
                 new_jcb.paser(conf)
                 if self.test(new_jcb.conf,url):
                     logger.info("find a conf form default!")
-
                     self.tm.save(new_jcb)
                     return self.do_run(new_jcb.conf,url)
+
+            logger.info("test common confs...")
+            confs = self.tm.get_common_conf()
+            for conf in confs:
+                new_jcb = name_manager.json_conf_bean(self.jcb.get_sourcename(), self.eb.eissn)
+                new_jcb.paser(conf)
+                if self.test(new_jcb.conf, url):
+                    logger.info("find a conf form default!")
+                    self.tm.save(new_jcb)
+                    return self.do_run(new_jcb.conf, url)
             logger.error("There is no conf available!")
             raise NoConfError("no conf")
+
 
     def load(self,jcb):
         string= self.tm.get(jcb)
@@ -114,6 +126,18 @@ class HTML():
             logger.error(url+" has err: ",exc_info = True)
             result=None
         return result !=None
+
+    def test_full_url(self,url):
+        num=-1
+        try:
+            download(url, collect.test_file)
+            num=checkpdf(collect.test_file)
+        except:
+            return False
+        return num>0
+
+
+
 
 
     def do_run(self,conf,url):
@@ -290,7 +314,7 @@ def get_html(url):
 def download(url, file):
     time.sleep(random.random()*3+1)
     data = requests.get(url.strip(), headers=header,verify=False,timeout=30)
-    print(data.text)
+    # print(data.text)
     data.encoding = 'utf-8'
     file = open(file, "wb+")
     file.write(data.content)
@@ -306,9 +330,11 @@ def checkpdf(file):
 
 
 if __name__ == '__main__':
+    pdf = PyPDF2.PdfFileReader(open("C:/File/0GCoGDKpMO3X.pdf", "rb"), strict=False)
+    print(pdf.getPage(2).extractText())
 
-    cp=config_parser()
-    res=cp.get_section("test")
-    url=HTML(None, None, None).do_run(res,"http://www.aed.org.cn/nyzyyhjxb/html/2018/2/20180205.htm")
-    print(url)
+    # cp=config_parser()
+    # res=cp.get_section("test")
+    # url=HTML(None, None, None).do_run(res,"http://www.aed.org.cn/nyzyyhjxb/html/2018/2/20180205.htm")
+    # print(url)
 

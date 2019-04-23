@@ -30,6 +30,7 @@ class conf_bean():
 
 
 class template_manager():
+    COMMON_CONF_NAME="common"
     def __init__(self):
         self.conf_name="sourcenames"
 
@@ -42,8 +43,14 @@ class template_manager():
         redis_.set(conf_bean.get_eissn(),conf_bean.to_string())
         redis_.sadd(conf_bean.default_name(),conf_bean.to_string())
 
+    def save_common_conf(self,conf):
+        redis_.sadd(self.COMMON_CONF_NAME,json.dumps(conf))
+
     def get(self,conf_bean):
         return redis_.get(conf_bean.get_eissn())
+
+    def get_common_conf(self):
+        return redis_.smembers(self.COMMON_CONF_NAME)
 
     def get_default(self,conf_bean):
         return redis_.smembers(conf_bean.default_name())
@@ -233,19 +240,19 @@ class url_manager():
 
 
 if __name__ == '__main__':
-    for key in redis_.keys("*"):
-        # redis_.delete(key)
-        # print(key ,redis_.type(key))
-        if redis_.type(key) == "string":
-            print(key,redis_.get(key))
-        elif redis_.type(key) == "set":
-            print(key," : ",redis_.scard(key)," : ",redis_.smembers(key))
-        elif redis_.type(key) =="list":
-            print(key ," : ",redis_.llen(key)," : ", redis_.lrange(key,0,100))
+    # for key in redis_.keys("*"):
+    #     # redis_.delete(key)
+    #     # print(key ,redis_.type(key))
+    #     if redis_.type(key) == "string":
+    #         print(key,redis_.get(key))
+    #     elif redis_.type(key) == "set":
+    #         print(key," : ",redis_.scard(key)," : ",redis_.smembers(key))
+    #     elif redis_.type(key) =="list":
+    #         print(key ," : ",redis_.llen(key)," : ", redis_.lrange(key,0,100))
 
 
-    # collect.check_task("gruyter0319")
-    # collect.check_finsh_task("gruyter0319")
+    collect.check_task("hs0418")
+    collect.check_finsh_task("hs0418")
 
 
     # collect.check_conf()

@@ -13,7 +13,7 @@ fake = faker.Factory.create()
 
 first_dir = "C:/pdfs/"
 # name="1"
-name="12"
+name="13"
 # url_file="C:/pdfs/url1.txt"
 # url_file="C:/pdfs/url.txt"
 redis_ = redis.Redis(host="10.3.1.99", port=6379 ,decode_responses=True)
@@ -49,28 +49,33 @@ def wait():
     time.sleep(random.random() * 3+1)
 
 def download():
-    url="http://iccm-central.org/Proceedings/ICCM12proceedings/site/theme/menu.htm"
+    url="http://www.iccm-central.org/Proceedings/ICCM13proceedings/SITE/PROCEEDING/PROCEEDING.htm"
     data=requests.get(url)
-    soup=BeautifulSoup(data.text,"html.parser")
-    for font in soup.find_all("font",size="-1"):
-        a=font.find("a")
-        if a!=None:
-            url="http://iccm-central.org/Proceedings/ICCM12proceedings/site/theme/"+a["href"]
 
-            wait()
-            data_1 = requests.get(url)
-            soup = BeautifulSoup(data_1.text, "html.parser")
-            for a in soup.find_all("a"):
-                if "home" in a.get_text().lower() or "back" in a.get_text().lower():
-                    continue
-                url1 = "http://iccm-central.org/Proceedings/ICCM12proceedings/site" + a["href"][2:]
-                wait()
-                data_2 = requests.get(url1)
-                soup = BeautifulSoup(data_2.text, "html.parser")
-                font = soup.find("font", size="+1")
-                a = font.find("a")
-                if a != None:
-                    url_2 = "http://iccm-central.org/Proceedings/ICCM12proceedings/site" + a["href"][2:]
+    soup=BeautifulSoup(data.text,"html.parser")
+    for a in soup.find_all("a"):
+        if "home" in a.get_text().lower():
+            continue
+        url1="http://www.iccm-central.org/Proceedings/ICCM13proceedings/SITE/PROCEEDING/"+a["href"]
+        wait()
+        data_1 = requests.get(url1)
+        soup = BeautifulSoup(data_1.text, "html.parser")
+        for a in soup.find_all("a"):
+            url2 = "http://www.iccm-central.org/Proceedings/ICCM13proceedings/SITE" + a["href"][2:]
+            print(url2)
+            data_2 = requests.get(url2)
+            soup = BeautifulSoup(data_2.text, "html.parser")
+            a = soup.find("a")
+            if a != None:
+                try:
+                    url_2 = "http://www.iccm-central.org/Proceedings/ICCM13proceedings/SITE" + a["href"][2:]
+                except:
+                    for a_tags in soup.find_all("a"):
+                        if "href" in a_tags:
+                            url_2="http://www.iccm-central.org/Proceedings/ICCM13proceedings/SITE" + a_tags["href"][2:]
+                            break
+
+                if redis_.sadd(url_dict,url_2) == 1:
                     try:
                         file_name = creat_filename(create_dir("0410"))
                         wait()
@@ -86,11 +91,16 @@ def download():
                         if page>0:
                             print("已下载数据："+url_2+"  "+file_name)
                             redis_.lpush(finsh_name,url_2+"  "+file_name)
+                            redis_.sadd(url_dict,url_2)
                     except:
                         redis_.lpush(delete_name,file_name)
 
     print("链接已完成，开始写数据...")
-    write_file = open("C:/pdfs/list.txt", "a+")
+    write()
+
+
+def write():
+    write_file = open("C:/pdfs/list" + name + ".txt", "a+")
 
     while (True):
         string = redis_.lpop(finsh_name)
@@ -101,7 +111,11 @@ def download():
         string = redis_.lpop(delete_name)
         if string == None:
             break
-        os.remove(string)
+        print("删除文件："+string)
+        try:
+            os.remove(string)
+        except:
+            pass
 
     write_file.close()
 
@@ -109,23 +123,24 @@ def download():
 
 if __name__ == '__main__':
     download()
-    # url="http://iccm-central.org/Proceedings/ICCM12proceedings/site/htmlpap/pap1364.htm"
-    # data_2=requests.get(url)
-    # soup = BeautifulSoup(data_2.text, "html.parser")
-    # font=soup.find("font",size="+1")
-    # a=font.find("a")
-    # if a!=None:
-    #     url_2="http://iccm-central.org/Proceedings/ICCM12proceedings/site"+a["href"][2:]
-    #     print(url_2)
-    #     file_name = creat_filename(create_dir("0410"))
-    #     pdf = requests.get(url_2, headers=header, verify=False, timeout=30)
-    #     pdf.encoding = 'utf-8'
-    #     file = open(file_name, "wb+")
-    #     file.write(pdf.content)
-    #     file.close()
+    # print(redis_.llen(delete_name))
+    # print(redis_.llen(finsh_name))
+    # write()
+    # write_file = open("C:/pdfs/list" + name + ".txt")
+    # for line in write_file.readlines():
     #
-    #     page=checkpdf(file_name)
-    #     print(page)
+    #     path=line.split("  ")[1].replace("\n","")
+    #     try:
+    #         os.remove(path)
+    #     except:
+    #         pass
+
+    # url2="http://www.iccm-central.org/Proceedings/ICCM13proceedings/SITE/INDEX/Index-1159.htm"
+    # data_2 = requests.get(url2)
+    # soup = BeautifulSoup(data_2.text, "html.parser")
+    # a = soup.find("a")
+    # print("href" in a)
+
 
 
 
