@@ -14,7 +14,7 @@ from collector import collect
 import pdfminer
 
 fake = faker.Factory.create()
-
+PROXY_POOL_URL= 'http://localhost:5555/random'
 
 logger = logging.getLogger("logger")
 
@@ -234,7 +234,6 @@ class type_1_parser(common_type_parser):
 
     def get_url(self,line,soup):
         strs = line.split(";")
-        logger.debug("Strings split by ; is : " + str(strs))
         tag = self.find(strs, soup)
         if tag.name == "a":
             return tag["href"]
@@ -249,11 +248,13 @@ class type_1_parser(common_type_parser):
                 # print(t.get_text().lower())
                 if args[3].lower() in t.get_text().strip().lower():
                     tag=t
+                    break
         elif args.__len__()==2:
             tags = soup.find_all(args[0])
             for t in tags:
                 if args[1].lower() in  t.get_text().strip().lower() :
                     tag = t
+                    break
         else:
             tag = soup.find(args[0], attrs={args[1]: args[2]})
         # logger.debug("find result: ")
@@ -301,11 +302,23 @@ class type_default_parser(common_type_parser):
 
 
 
+
+def get_proxy():
+    try:
+        response = requests.get(PROXY_POOL_URL)
+        if response.status_code == 200:
+            return response.text
+    except ConnectionError:
+        return None
+
+
 header={"User-Agent": fake.user_agent()}
+
 
 def get_html(url):
     time.sleep(random.random()*3+1)
-    data = requests.get(url,headers=header,verify=False,timeout=20)
+    data = requests.get(url,headers=header,verify=False,timeout=60)
+    print(data.text)
     data.encoding = 'utf-8'
     datatext = data.text
     data.close()
@@ -313,7 +326,8 @@ def get_html(url):
 
 def download(url, file):
     time.sleep(random.random()*3+1)
-    data = requests.get(url.strip(), headers=header,verify=False,timeout=30)
+    # proip =find_proxy_ip()
+    data = requests.get(url.strip(),headers=header,verify=False,timeout=30)
     # print(data.text)
     data.encoding = 'utf-8'
     file = open(file, "wb+")
@@ -326,13 +340,21 @@ def checkpdf(file):
     return pdf.getNumPages()
 
 
-
-
+def find_proxy_ip():
+    while(True):
+        try:
+            proip = {"http": "http://" + get_proxy()}
+            data = requests.get("http://icanhazip.com", proxies=proip, headers=header, verify=False, timeout=30)
+        except:
+            continue
+        return proip
 
 if __name__ == '__main__':
-    pdf = PyPDF2.PdfFileReader(open("C:/File/0GCoGDKpMO3X.pdf", "rb"), strict=False)
-    print(pdf.getPage(2).extractText())
-
+    # pdf = PyPDF2.PdfFileReader(open("C:/File/0GCoGDKpMO3X.pdf", "rb"), strict=False)
+    # print(pdf.getPage(2).extractText())
+    # print(type(get_proxy()))
+    url="http://icanhazip.com"
+    get_html(url)
     # cp=config_parser()
     # res=cp.get_section("test")
     # url=HTML(None, None, None).do_run(res,"http://www.aed.org.cn/nyzyyhjxb/html/2018/2/20180205.htm")
