@@ -171,7 +171,7 @@ def test_download():
 
 if __name__ == '__main__':
 
-    name = "test"
+    name = "hs0418"
     # name = "yj0329"
     # name = "jx0122"
 
@@ -179,7 +179,7 @@ if __name__ == '__main__':
     # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
 
     # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
-    file_path = "C:/execl/0418/test.xls"
+    file_path = "C:/execl/0418/大回溯待采全文-2（16908）.xls"
 
     #check_task(name)
     cp=htmls.config_parser()

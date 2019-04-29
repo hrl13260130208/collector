@@ -318,7 +318,7 @@ header={"User-Agent": fake.user_agent()}
 def get_html(url):
     time.sleep(random.random()*3+1)
     data = requests.get(url,headers=header,verify=False,timeout=60)
-    print(data.text)
+    # print(data.text)
     data.encoding = 'utf-8'
     datatext = data.text
     data.close()

@@ -48,24 +48,30 @@ def read(file):
         layout=device.get_result()
         # 这里layout是一个LTPage对象 里面存放着 这个page解析出的各种对象
         # 一般包括LTTextBox, LTFigure, LTImage, LTTextBoxHorizontal 等等
-        print("======================")
+        # print("======================")
         for x in layout:
             #如果x是水平文本对象的话
-            print("+++++++++++",type(x))
+            # print("+++++++++++",type(x))
             # if(isinstance(x,LTTextBoxHorizontal)):
             #     text=re.sub(replace,'',x.get_text())
             #     print(text)
             #     if len(text)>500:
             #         return text[:text.rfind(".")]
-            line=x.get_text()
-            print(line)
+            line=x.get_text().strip()
+            # print(line)
             if len(line)>100:
                 a=line.find(".")
                 b=line.find("。")
+                if "  " in line:
+                    continue
+                if "(cid:" in line:
+                    line=re.sub("\(cid:.+\)","",line)
                 if a!=-1:
-                    return line[:line.rfind(".")+1]
+                    line=line[:line.rfind(".")+1]
                 if b!=-1:
-                    return line[:line.rfind("。")+1]
+                    line=line[:line.rfind("。")+1]
+                if len(line)>50:
+                    return line
 class excels():
     def __init__(self,file_path):
         self.file_path=file_path
@@ -89,17 +95,21 @@ class excels():
     def read(self):
 
         # self.create()
-
+        print("====")
         for row in range(self.r_sheet.nrows-1):
             row_num=row+1
+            print(row_num)
             path=self.r_sheet.cell(row_num,self.nums["path"]).value
             if os.path.exists(path):
                 try:
                     print("读取PDF："+path+"...")
                     text=read(path)
+                    text.replace("\n"," ").replace("Abstract","").replace("Abstract:","").srtip()
                     self.write(text,row_num)
                 except:
                     pass
+            else:
+                print("路径不存在！")
         self.save()
 
 
@@ -117,7 +127,7 @@ class excels():
 
 
 if __name__ == '__main__':
-    excels("C:/tmp/ASS.xls").read()
+    excels("C:/temp/test.xls").read()
     # path="Z:/数据组内部共享/中信所2019年任务/132/1-東光高岳-69874\httpswww.tktk.co.jpresearchreportpdf2014giho2014_27.pdf"
     # print("=============",read(path))
 
