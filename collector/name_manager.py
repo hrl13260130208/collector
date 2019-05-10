@@ -4,8 +4,8 @@ import json
 from collector import collect
 import requests
 
-# redis_ = redis.Redis(host="10.3.1.99", port=6379, db=1,decode_responses=True)
-redis_ = redis.Redis(host="10.3.1.99", port=6379 ,decode_responses=True)
+redis_ = redis.Redis(host="10.3.1.99", port=6379, db=1,decode_responses=True)
+# redis_ = redis.Redis(host="10.3.1.99", port=6379 ,decode_responses=True)
 
 class conf_bean():
     def __init__(self,sourcename,eissn):
@@ -14,6 +14,9 @@ class conf_bean():
 
     def get_sourcename(self):
         return self.sourcename
+
+    def get_template_name(self):
+        return  self.sourcename+"_"+self.eissn
 
     def get_eissn(self):
         return self.eissn
@@ -30,24 +33,33 @@ class conf_bean():
 
 
 class template_manager():
+    '''
+    配置的模板最终存储在redis中，此类用于向redis中存储模板
+    '''
     COMMON_CONF_NAME="common"
     def __init__(self):
         self.conf_name="sourcenames"
 
     def save(self,conf_bean):
+        '''
+        存储模板
+
+        :param conf_bean:
+        :return:
+        '''
         if not redis_.exists(conf_bean.get_sourcename()):
             redis_.sadd(self.conf_name,conf_bean.get_sourcename())
             redis_.sadd(conf_bean.get_sourcename(),conf_bean.default_name())
 
-        redis_.sadd(conf_bean.get_sourcename(),conf_bean.get_eissn())
-        redis_.set(conf_bean.get_eissn(),conf_bean.to_string())
+        redis_.sadd(conf_bean.get_sourcename(),conf_bean.get_template_name())
+        redis_.set(conf_bean.get_template_name(),conf_bean.to_string())
         redis_.sadd(conf_bean.default_name(),conf_bean.to_string())
 
     def save_common_conf(self,conf):
         redis_.sadd(self.COMMON_CONF_NAME,json.dumps(conf))
 
     def get(self,conf_bean):
-        return redis_.get(conf_bean.get_eissn())
+        return redis_.get(conf_bean.get_template_name())
 
     def get_common_conf(self):
         return redis_.smembers(self.COMMON_CONF_NAME)
@@ -98,6 +110,10 @@ class json_conf_bean(conf_bean):
 
 
 class execl_bean():
+    '''
+    读取Excel数据的bean
+    '''
+
     def __init__(self):
         self.row_num=0
         self.sourcename=""
@@ -132,9 +148,6 @@ class execl_bean():
         self.sourcename.replace("_","")
         if self.abs_url!="":
             self.pinjie=self.abs_url
-
-
-
 
         # print(self.sourcename.find("Sage"))
         # if self.sourcename=="Elsevier":
@@ -241,14 +254,14 @@ class url_manager():
 
 if __name__ == '__main__':
     # for key in redis_.keys("*"):
-    #     # redis_.delete(key)
+    #     redis_.delete(key)
     #     # print(key ,redis_.type(key))
     #     if redis_.type(key) == "string":
     #         print(key,redis_.get(key))
     #     elif redis_.type(key) == "set":
     #         print(key," : ",redis_.scard(key)," : ",redis_.smembers(key))
     #     elif redis_.type(key) =="list":
-    #         print(key ," : ",redis_.llen(key)," : ", redis_.lrange(key,0,100))
+    #         print(key ," : ",redis_.llen(key)," : ")#, redis_.lrange(key,0,100))
 
 
     collect.check_task("hs0418")

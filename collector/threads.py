@@ -47,7 +47,7 @@ class download_url(threading.Thread):
                     if html_.test_full_url(eb.full_url):
                         full_url=eb.full_url
                     else:
-                        full_url = html_.run(url)
+                        full_url = html_.run(eb.full_url)
 
             except NoConfError:
                 logger.info(eb.sourcename+" "+eb.eissn+" 无可用的conf.")
@@ -136,6 +136,7 @@ class download(threading.Thread):
         uid=str(uuid.uuid1())
         suid=''.join(uid.split('-'))
         return self.dir+suid+".pdf"
+
 class Elsevier_download(threading.Thread):
     def __init__(self,sourcename,um,tm,dir):
         threading.Thread.__init__(self)

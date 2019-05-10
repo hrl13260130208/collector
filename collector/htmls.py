@@ -11,7 +11,7 @@ import copy
 import urllib.parse as parse
 import random
 from collector import collect
-import pdfminer
+import re
 
 fake = faker.Factory.create()
 PROXY_POOL_URL= 'http://localhost:5555/random'
@@ -128,6 +128,11 @@ class HTML():
         return result !=None
 
     def test_full_url(self,url):
+        '''
+        测试full_url,是否是pdf链接
+        :param url:
+        :return:
+        '''
         num=-1
         try:
             download(url, collect.test_file)
@@ -135,10 +140,6 @@ class HTML():
         except:
             return False
         return num>0
-
-
-
-
 
     def do_run(self,conf,url):
         conf.sort()
@@ -189,15 +190,18 @@ class common_type_parser:
         self.url = url
 
     def run(self):
-        url_s = ""
-        url_num = 0
+        url_s =None
+        url_num = None
         last = self.conf[self.conf.__len__() - 1]
         if last[0].find("url") != -1:
             temp_s = last[0].split("_")
-            if temp_s.__len__() != 1:
+            if temp_s.__len__() == 2:
                 url_num = int(temp_s[1])
+            elif temp_s.__len__() ==1:
+                url_num=self.conf.__len__()-1
             url_s = last[1]
             self.conf.remove(last)
+
         return self.run_url(url_s, url_num,self.url)
 
     def run_url(self, url_s, url_num,s_url):
@@ -206,29 +210,102 @@ class common_type_parser:
         soup = BeautifulSoup(html, "html.parser")
         url = self.get_url(first[1], soup)
         self.conf.remove(first)
-        logger.debug("url : " + url)
+
         if self.conf.__len__() == 0:
-
-            if url_num == 0:
-                if url_s =="default":
-
-                    if "com" in url_p:
-                        num = url_p.find(".com")
-                    elif "org" in url_p:
-                        num = url_p.find(".org")
-                    url_s = url_p[:num + 4]
-                return url_s + url
-            else:
-                return url
+            # print("=============",self.get_new_url(first,url_num,url_s,url_p,url))
+            return self.get_new_url(first,url_num,url_s,url_p,url)
         else:
-            if int(first[0]) == url_num:
-                n_url=url_s + url
-            else:
-                n_url=url
+            n_url=self.get_new_url(first, url_num, url_s, url_p,url)
+            # print("________",n_url)
             return self.run_url(url_s, url_num,n_url)
+
     def get_url(self,line,soup):
         pass
 
+    def get_new_url(self,first,url_num,url_s,url_p,url):
+        '''
+        根据配置文件与爬取的结果生成新的url
+        :return:
+        '''
+        if url_num == None:
+            if "http" in url:
+                return url
+            else:
+                prefix_url = self.get_url_prefix(url_p)
+                return self.merge_url(prefix_url, url)
+        else:
+            if int(first[0]) == url_num:
+                if url_s.isdigit():
+                    url_s=self.get_url_prefix_by_conf_num(url_p,int(url_s))
+                return  self.merge_url(url_s,url)
+
+
+
+
+    def merge_url(self,prefix_url,url):
+        '''
+        拼接链接
+        :param prefix_url:
+        :param url:
+        :return:
+        '''
+        if prefix_url[-1] == "/" or prefix_url[-1] == "\\":
+            prefix_url=prefix_url[:-1]
+
+        if url[0] == "/" or url[0] == "\\":
+            new_url = prefix_url + url
+        else:
+            new_url = prefix_url + "/" + url
+        return  new_url
+
+    def get_url_prefix_by_conf_num(self,url,conf_num):
+        '''
+        通过配置文件中url配置的数字来获取前缀
+        数字表示从右向左数的‘/’的个数
+        :param url:
+        :param conf_num:
+        :return:
+        '''
+        for i in range(conf_num):
+            num1 = url.rfind("/")
+            num2 = url.rfind("\\")
+            if num1 != -1:
+                if num2 != -1:
+                    if num2 < num1:
+                        num1 = num2
+                url =url[:num1]
+            else:
+                if num2 != -1:
+                    url = url[:num2]
+        return url
+
+
+
+
+    def get_url_prefix(self,url):
+        '''
+
+        :param url:
+        :return:
+        '''
+        h_url = re.match("http.*//", url).group()
+        line = url.replace(h_url, "")
+        num1 = line.find("/")
+        num2 = line.find("\\")
+        m_url = None
+        if num1 != -1:
+            if num2 != -1:
+                if num2 < num1:
+                    num1 = num2
+            m_url = line[:num1]
+        else:
+            if num2 != -1:
+                m_url = line[:num2]
+        if m_url == None:
+            logger.error("获取url前缀出错，出错url："+url)
+        else:
+            print(h_url + m_url)
+            return h_url + m_url
 
 class type_1_parser(common_type_parser):
 
@@ -236,6 +313,7 @@ class type_1_parser(common_type_parser):
         strs = line.split(";")
         tag = self.find(strs, soup)
         if tag.name == "a":
+            # print(tag["href"])
             return tag["href"]
 
     def find(self, strs, soup):
@@ -243,6 +321,7 @@ class type_1_parser(common_type_parser):
         args = first_args.split(",")
         tag=None
         if args.__len__()==4:
+
             tags = soup.find_all(args[0], attrs={args[1]: args[2]})
             for t in tags:
                 # print(t.get_text().lower())
@@ -263,6 +342,7 @@ class type_1_parser(common_type_parser):
         if tag ==None:
             raise ValueError("tag不能为空！")
         if strs.__len__() == 0:
+            # print("==========",tag)
             return tag
         else:
             return self.find(strs, tag)
@@ -328,7 +408,7 @@ def download(url, file):
     time.sleep(random.random()*3+1)
     # proip =find_proxy_ip()
     data = requests.get(url.strip(),headers=header,verify=False,timeout=30)
-    # print(data.text)
+    print(data.text)
     data.encoding = 'utf-8'
     file = open(file, "wb+")
     file.write(data.content)
@@ -339,6 +419,23 @@ def checkpdf(file):
     pdf = PyPDF2.PdfFileReader(open(file,"rb"),strict=False)
     return pdf.getNumPages()
 
+def get_data(url):
+    try:
+        print("======")
+        proip=find_proxy_ip()
+        return  requests.get(url, headers=header, proxies=proip,verify=False, timeout=60)
+    except:
+
+        return retry(url)
+
+def retry(url):
+    for i in range(5):
+        try:
+            print("+++++++=")
+            proip = find_proxy_ip()
+            return requests.get(url, headers=header, proxies=proip, verify=False, timeout=60)
+        except:
+            print("重试失败！")
 
 def find_proxy_ip():
     while(True):
@@ -346,6 +443,7 @@ def find_proxy_ip():
             proip = {"http": "http://" + get_proxy()}
             data = requests.get("http://icanhazip.com", proxies=proip, headers=header, verify=False, timeout=30)
         except:
+            print("获取ip失败！")
             continue
         return proip
 
@@ -353,10 +451,33 @@ if __name__ == '__main__':
     # pdf = PyPDF2.PdfFileReader(open("C:/File/0GCoGDKpMO3X.pdf", "rb"), strict=False)
     # print(pdf.getPage(2).extractText())
     # print(type(get_proxy()))
-    url="http://icanhazip.com"
-    get_html(url)
+    url="https://www.nature.com/cgt/volumes"
+    print(url[-1])
+    # print(get_data(url).text)
     # cp=config_parser()
     # res=cp.get_section("test")
     # url=HTML(None, None, None).do_run(res,"http://www.aed.org.cn/nyzyyhjxb/html/2018/2/20180205.htm")
     # print(url)
+    # h_url=re.match("http.*//",url).group()
+    # line=url.replace(h_url,"")
+    # num1=line.find("/")
+    # num2=line.find("\\")
+    # m_url=None
+    # if  num1!=-1:
+    #     if num2!=-1:
+    #         if num2<num1:
+    #             num1=num2
+    #     m_url=line[:num1]
+    # else:
+    #     if num2!=-1:
+    #         m_url=line[:num2]
+    # if m_url==None:
+    #     print("err")
+    # else:
+    #     print(h_url+m_url)
+
+    print(url[:-2])
+
+
+
 
