@@ -106,6 +106,8 @@ def run_thread(name,file_path):
             th = threads.Elsevier_download(url_set_name, um, tm, dir)
         elif url_set_name == "IEEE":
             th= threads.IEEE_download(url_set_name, um, tm, dir)
+        elif url_set_name == "Doaj":
+            th = threads.Single_thread(url_set_name, um, tm, dir)
         else:
             th = threads.download_url(url_set_name, um, tm)
         fu=executor.submit(th.run)
@@ -157,9 +159,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://www.sciencedirect.com/science/article/pii/S147655861080079X"
+    url_="https://www.jssm.org/hf.php?id=jssm-12-730.xml"
 
-    section="Doaj_0929-6646"
+    section="common_2"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)

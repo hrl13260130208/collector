@@ -304,7 +304,7 @@ class common_type_parser:
         if m_url == None:
             logger.error("获取url前缀出错，出错url："+url)
         else:
-            print(h_url + m_url)
+            # print(h_url + m_url)
             return h_url + m_url
 
 class type_1_parser(common_type_parser):
@@ -408,12 +408,10 @@ def download(url, file):
     time.sleep(random.random()*3+1)
     # proip =find_proxy_ip()
     data = requests.get(url.strip(),headers=header,verify=False,timeout=30)
-    print(data.text)
+    # print(data.text)
     data.encoding = 'utf-8'
     file = open(file, "wb+")
     file.write(data.content)
-
-
 
 def checkpdf(file):
     pdf = PyPDF2.PdfFileReader(open(file,"rb"),strict=False)
@@ -451,8 +449,8 @@ if __name__ == '__main__':
     # pdf = PyPDF2.PdfFileReader(open("C:/File/0GCoGDKpMO3X.pdf", "rb"), strict=False)
     # print(pdf.getPage(2).extractText())
     # print(type(get_proxy()))
-    url="https://www.nature.com/cgt/volumes"
-    print(url[-1])
+    url="https://www.tandfonline.com/doi/full/10.1002/ehs2.1211"
+    print(retry(url).text)
     # print(get_data(url).text)
     # cp=config_parser()
     # res=cp.get_section("test")

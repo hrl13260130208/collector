@@ -13,6 +13,11 @@ import re
 import xlrd
 from  xlutils import copy
 import os
+import logging
+import PyPDF2
+
+logging.basicConfig(level = logging.ERROR,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger=logging.getLogger("Ilogger")
 
 def read(file):
     #打开一个pdf文件
@@ -57,9 +62,10 @@ def read(file):
             #     print(text)
             #     if len(text)>500:
             #         return text[:text.rfind(".")]
+            # print(x)
             line=x.get_text().strip()
             # print(line)
-            if len(line)>100:
+            if len(line)>600:
                 a=line.find(".")
                 b=line.find("。")
                 if "  " in line:
@@ -89,8 +95,11 @@ class excels():
     def init_nums(self):
         self.list = self.r_sheet.row_values(0)
         for value in self.values:
+            print(value)
+            print(self.list)
             index = self.list.index(value)
             self.nums[value]=index
+        # self.nums["path"]=
 
     def read(self):
 
@@ -104,10 +113,11 @@ class excels():
                 try:
                     print("读取PDF："+path+"...")
                     text=read(path)
-                    text.replace("\n"," ").replace("Abstract","").replace("Abstract:","").srtip()
+                    text=text.replace("\n"," ").replace("Abstract:","").replace("Abstract","").strip()
+                    print(text)
                     self.write(text,row_num)
                 except:
-                    pass
+                    logger.error("err",exc_info=True)
             else:
                 print("路径不存在！")
         self.save()
@@ -121,15 +131,24 @@ class excels():
     def save(self):
         self.wb.save(self.file_path)
 
-
+def py2pdf_read(path):
+    file=open(path, "rb")
+    pdf = PyPDF2.PdfFileReader(file, strict=False)
+    print(pdf.getNumPages())
+    print(pdf.getFormTextFields())
 
 
 
 
 if __name__ == '__main__':
-    excels("C:/temp/test.xls").read()
+    # excels("C:/temp/ISTS1.xls").read()
+    # path="C:/temp/oRxeC5q6BgOl.pdf"
+    # read(path)
     # path="Z:/数据组内部共享/中信所2019年任务/132/1-東光高岳-69874\httpswww.tktk.co.jpresearchreportpdf2014giho2014_27.pdf"
     # print("=============",read(path))
+
+    path="Z:/数据组内部共享/中信所2019年任务/补摘要/Japan Society for Aeronautical and Space Sciences 抽/ISTS1/6RyKnw4m14tQ.pdf"
+    py2pdf_read(path)
 
 
 

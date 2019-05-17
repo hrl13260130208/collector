@@ -266,10 +266,75 @@ class IEEE_download(threading.Thread):
                     iframe = soup.find("iframe")
                     return iframe["src"]
 
+class Single_thread(threading.Thread):
+    def __init__(self,sourcename,um,tm,dir):
+        threading.Thread.__init__(self)
+        self.dir=dir
+        self.sourcename = sourcename
+        self.um=um
+        self.finsh_step=2
+        self.err_step = 3
+        self.tm = tm
+        self.url_step = 1
+        self.url_set_name = um.fix(sourcename, self.url_step - 1)
 
+    def creat_filename(self):
+        uid=str(uuid.uuid1())
+        suid=''.join(uid.split('-'))
+        return self.dir+suid+".pdf"
 
+    def run(self):
+        logger.info(self.sourcename + " download_url start...")
+        while (True):
+            string = self.um.get_eb(self.url_set_name)
+            if string == None:
+                break
+            eb = nm.execl_bean()
+            eb.paser(string)
+            url = ""
+            if eb.sourcename == "PMC":
+                url = "https://www.ncbi.nlm.nih.gov/pmc/articles/" + eb.waibuaid
+            else:
+                url = eb.pinjie
 
+            jcb =nm.json_conf_bean(eb.sourcename, eb.eissn)
+            file_path = self.creat_filename()
+            try:
+                html_=htmls.HTML(eb,jcb,self.tm)
+                if eb.full_url == "":
+                    # logger.info("URL_THREAD - "+self.name+" - "+self.sourcename+" get download url form: "+url)
+                    print("+++++++++++++++++")
+                    print(eb.full_url)
+                    full_url=html_.run(url)
+                else:
+                    print("=====================",eb.full_url)
+                    if html_.test_full_url(eb.full_url):
+                        full_url=eb.full_url
+                    else:
+                        full_url = html_.run(eb.full_url)
+                print("下载pdf...",full_url)
+                htmls.download(full_url, file_path)
+                eb.page = htmls.checkpdf(file_path)
+                print("下载成功")
+            except NoConfError:
+                logger.info(eb.eissn + " 无可用的conf.")
+                eb.err_and_step = str(self.url_step) + "：  无可用的conf"
+                self.um.save(eb, self.err_step)
+            except Exception as e:
+                logger.error(self.sourcename + " download url " + url + " has err", exc_info=True)
+                if eb.retry < collect.DOWNLOAD_URL_RETRY:
+                    logger.info("retry time:" + str(eb.retry))
+                    eb.retry += 1
+                    self.um.save(eb, self.url_step - 1)
+                else:
+                    logger.info("retry:" + str(eb.retry) + ". retry次数超过5次，不再重试。")
+                    self.um.save(eb, self.err_step)
+                continue
 
+            eb.full_url = full_url
+            eb.abs_url = url
+            eb.full_path = file_path[8:]
+            self.um.save(eb, self.finsh_step)
 
 
 if __name__ == '__main__':
