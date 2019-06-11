@@ -33,7 +33,13 @@ class download_url(threading.Thread):
             eb.paser(string)
             url=""
             if eb.sourcename == "PMC":
-                url="https://www.ncbi.nlm.nih.gov/pmc/articles/"+eb.waibuaid
+                if eb.waibuaid =="":
+                    if eb.abs_url!="":
+                        url=eb.abs_url
+                    else:
+                        url=eb.pinjie
+                else:
+                    url="https://www.ncbi.nlm.nih.gov/pmc/articles/"+eb.waibuaid
             else:
                 url= eb.pinjie
 

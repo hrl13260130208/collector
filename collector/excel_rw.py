@@ -102,14 +102,35 @@ class excels():
 
         logger.info("report文件写入完成。")
 
+def write_pages(excel_name):
+    rb = xlrd.open_workbook(excel_name)
+    r_sheet = rb.sheet_by_index(0)
+    wb = copy.copy(rb)
+    w_sheet = wb.get_sheet(0)
+    list = r_sheet.row_values(0)
+
+    total_pages_num = list.index("TOTALPAGES")
+    pages_num = list.index("page")
+
+    for row in range(r_sheet.nrows - 1):
+        tp=r_sheet.cell(row+1,total_pages_num)
+        print("==============",tp.value)
+        if tp.value=="":
+            page=r_sheet.cell(row+1,pages_num)
+            print(page)
+            if page.value!="":
+                w_sheet.write(row+1,total_pages_num,page.value)
+
+    wb.save(excel_name)
 
 if __name__ == '__main__':
-    name="dfsf"
-    um = name_manager.url_manager(name)
-    file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/中信所待补全文清单_20181219..xls"
-    ex=excels(file_path,um)
-    ex.read()
-    ex.write()
+    # name="dfsf"
+    # um = name_manager.url_manager(name)
+    # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/中信所待补全文清单_20181219..xls"
+    # ex=excels(file_path,um)
+    # ex.read()
+    # ex.write()
+    write_pages("C:/public/大回溯待采全文-2（16908）.xls")
 
 
 
