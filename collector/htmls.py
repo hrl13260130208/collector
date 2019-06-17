@@ -238,6 +238,12 @@ class common_type_parser:
                 if url_s.isdigit():
                     url_s=self.get_url_prefix_by_conf_num(url_p,int(url_s))
                 return  self.merge_url(url_s,url)
+            else:
+                if "http" in url:
+                    return url
+                else:
+                    prefix_url = self.get_url_prefix(url_p)
+                    return self.merge_url(prefix_url, url)
 
 
 
@@ -397,8 +403,9 @@ header={"User-Agent": fake.user_agent()}
 
 def get_html(url):
     time.sleep(random.random()*3+1)
+    print("========",url)
     data = requests.get(url,headers=header,verify=False,timeout=60)
-    # print(data.text)
+    print(data.text)
     data.encoding = 'utf-8'
     datatext = data.text
     data.close()

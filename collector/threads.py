@@ -33,15 +33,20 @@ class download_url(threading.Thread):
             eb.paser(string)
             url=""
             if eb.sourcename == "PMC":
-                if eb.waibuaid =="":
-                    if eb.abs_url!="":
-                        url=eb.abs_url
-                    else:
-                        url=eb.pinjie
-                else:
-                    url="https://www.ncbi.nlm.nih.gov/pmc/articles/"+eb.waibuaid
+                # if eb.waibuaid =="":
+                #     if eb.abs_url!="":
+                #         url=eb.abs_url
+                #     else:
+                #         url=eb.pinjie
+                # else:
+                #     url="https://www.ncbi.nlm.nih.gov/pmc/articles/"+eb.waibuaid
+                url = eb.pinjie
             else:
-                url= eb.pinjie
+                if eb.abs_url!="":
+                    url=eb.abs_url
+                else:
+                    url= eb.pinjie
+
 
             jcb = nm.json_conf_bean(eb.sourcename, eb.eissn)
             html_=htmls.HTML(eb,jcb,self.tm)
@@ -168,17 +173,23 @@ class Elsevier_download(threading.Thread):
                 break
             eb = nm.execl_bean()
             eb.paser(string)
-            url = ""
-            if eb.sourcename == "PMC":
-                url = "https://www.ncbi.nlm.nih.gov/pmc/articles/" + eb.waibuaid
-            else:
-                url = eb.pinjie
+
+            url = eb.pinjie
 
             jcb =nm.json_conf_bean(eb.sourcename, eb.eissn)
             file_path = self.creat_filename()
+            html_ = htmls.HTML(eb, jcb, self.tm)
             try:
                 logger.info(self.sourcename + "get download url form: " + url)
-                full_url = htmls.HTML(eb, jcb, self.tm).run(url)
+                if eb.full_url == "":
+                    logger.info("URL_THREAD - "+self.name+" - "+self.sourcename+" get download url form: "+url)
+                    full_url=html_.run(url)
+                else:
+                    if html_.test_full_url(eb.full_url):
+                        full_url=eb.full_url
+                    else:
+                        full_url = html_.run(eb.full_url)
+                # full_url = htmls.HTML(eb, jcb, self.tm).run(url)
                 htmls.download(full_url, file_path)
                 eb.page = htmls.checkpdf(file_path)
             except NoConfError:

@@ -146,8 +146,7 @@ class execl_bean():
             self.sourcename="IOP Publish"
 
         self.sourcename.replace("_","")
-        if self.abs_url!="":
-            self.pinjie=self.abs_url
+
 
         # print(self.sourcename.find("Sage"))
         # if self.sourcename=="Elsevier":
@@ -264,8 +263,8 @@ if __name__ == '__main__':
     #         print(key ," : ",redis_.llen(key)," : ")#, redis_.lrange(key,0,100))
 
 
-    collect.check_task("hs0418")
-    collect.check_finsh_task("hs0418")
+    collect.check_task("hs0610-c2")
+    collect.check_finsh_task("hs0610-c2")
 
 
     # collect.check_conf()

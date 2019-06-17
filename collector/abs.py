@@ -117,6 +117,12 @@ class excels():
                     print("读取PDF："+path+"...")
                     # text=read(path)
                     # text=text.replace("\n"," ").replace("Abstract:","").replace("Abstract","").strip()
+                    pdf_file=open(path, "rb")
+                    pdf = PyPDF2.PdfFileReader(pdf_file, strict=False)
+                    if pdf.getNumPages()>10:
+                        pdf_file.close()
+                        continue
+                    pdf_file.close()
                     text=ocr_read(path)
                     text = text.replace("\n", " ")
                     print(text)
@@ -207,7 +213,14 @@ def run(excel_path):
 
 
 if __name__ == '__main__':
-    run("C:/temp/erps.xls")
+    run("C:/temp/1.xls")
+    # path="C:/pdfs/iccm"
+    # c_path="C:/temp/train"
+    # for file in os.listdir(path):
+    #     file_path=os.path.join(path,file)
+    #     print(file_path)
+    #     img=convert_from_path(file_path)
+    #     img[0].save(os.path.join(c_path,file.replace(".pdf",".jpg")))
 
 
     # excels("C:/temp/ISTS1.xls").read()

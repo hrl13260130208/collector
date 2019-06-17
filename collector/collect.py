@@ -159,9 +159,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="https://www.jssm.org/hf.php?id=jssm-12-730.xml"
+    url_="http://dx.doi.org/10.1016/S0929-6646(09)60362-4"
 
-    section="common_2"
+    section="Elsevier_1028-4559-1875-6263"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
@@ -173,25 +173,25 @@ def test_download():
 
 if __name__ == '__main__':
 
-    name = "hs0610"
-    # name = "test"
-    # name = "yj0329"
-    # name = "jx0122"
+    # name = "hs0610-c2"
+    # # name = "test"
+    # # name = "yj0329"
+    # # name = "jx0122"
+    #
+    # # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/0329/冶金所待补全文清单_20190329..xls"
+    # # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
+    #
+    # # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
+    # file_path = "C:/public/目次采全文/0610-拆2.xls"
+    # # file_path = "C:/public/目次采全文/temp.xls"
+    #
+    # #check_task(name)
+    # cp=htmls.config_parser()
+    # cp.paser()
+    # run_thread(name,file_path)
+    # cp.backup()
 
-    # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/0329/冶金所待补全文清单_20190329..xls"
-    # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
-
-    # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
-    file_path = "C:/public/目次采全文/20190610中信所大回溯目次采全文.xls"
-    # file_path = "C:/temp/test.xls"
-
-    #check_task(name)
-    cp=htmls.config_parser()
-    cp.paser()
-    run_thread(name,file_path)
-    cp.backup()
-
-    # test_download()
+    test_download()
 
 
 

@@ -30,6 +30,7 @@ from pdf2image import convert_from_path
 import tempfile
 import PIL.Image as Image
 import pytesseract
+import cv2
 
 ocr_paths=[]
 
@@ -42,6 +43,7 @@ def main(filename, outputDir):
             if index >2:
                 break
             image_path='%s/page_%s.png' % (outputDir, index)
+
             ocr_paths.append(image_path)
             img.save(image_path)
 
@@ -84,11 +86,56 @@ def abs_clear(abs):
         abs=abs+"."
     return abs
 
-if __name__ == "__main__":
-    print("a".isalpha())
-    # main('C:/pdfs/jnav/3ab746ae5cbe11e987f500ac37466cf9.pdf', 'C:/temp')
-    # for path in ocr_paths:
-    #     print("===========",path)
-    #     # print(pytesseract.image_to_string(path))
-    #     print("+++++++++",get_abs(pytesseract.image_to_string(path,lang="jpn")))
+def create_box(pdf_path):
+    path="C:/temp/box/"
+    images = convert_from_path(pdf_path)
+    for index, img in enumerate(images):
+        image_path=path+"r"+str(index)+".png"
+        img.save(image_path)
+        image = cv2.imread(image_path)
+        box = pytesseract.image_to_data(image)
+        for line in box.split("\n"):
+            # print(line)
+            if "left" in line:
+                continue
+            args = line.split("\t")
+            if int(args[3]) != 0:
+                continue
+            cv2.rectangle(image, (int(args[6]), int(args[7])),
+                          (int(args[6]) + int(args[8]), int(args[7]) + int(args[9])), (255, 0, 0))
+        cv2.imwrite(image_path, image)
 
+if __name__ == "__main__":
+    create_box("C:/pdfs/dynamic/1a2dd1fa5d0511e9a9ca00ac37466cf9.pdf")
+    # # print("a".isalpha())
+    # main('C:/temp/page_0.png', 'C:/temp')
+    # # for path in ocr_paths:
+    # #     print("===========",path)
+    # #     # print(pytesseract.image_to_string(path))
+    # #     print("+++++++++",get_abs(pytesseract.image_to_string(path)))
+    # # print(pytesseract.image_to_string("C:/temp/page_0.png"))
+    # box=pytesseract.image_to_data("C:/temp/page_0.png")
+    # image=cv2.imread("C:/temp/page_0.png")
+    #
+    # print(type(box))
+    # block_dict={}
+    # for line in box.split("\n"):
+    #     # print(line)
+    #     if "left" in line:
+    #         continue
+    #     args=line.split("\t")
+    #     if int(args[3])!=0:
+    #         continue
+    #
+    #     # block_num=args[2]
+    #     # num1=int(args[6])
+    #     # num2=int(args[6])+int(args[8])
+    #     # num3=int(args[7]
+    #     # num4=args[2]
+    #     cv2.rectangle(image,(int(args[6]),int(args[7])),(int(args[6])+int(args[8]),int(args[7])+int(args[9])),(255, 0, 0))
+    #     # print(args.__len__())
+    #
+    # # cv2.imshow("Text Detection", image)
+    # #
+    # # cv2.waitKey(0)
+    # cv2.imwrite("C:/temp/r1.png",image)
