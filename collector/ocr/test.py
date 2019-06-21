@@ -48,12 +48,18 @@ def main(filename, outputDir):
             img.save(image_path)
 
 def get_abs(text):
-    print(text)
     abs_num=text.lower().find("abstract")
     if abs_num!=-1:
         keywords_num=text.lower().find("keywords")
         if keywords_num!=-1:
-            return abs_clear(text[abs_num+8:keywords_num])
+            if keywords_num<abs_num+8:
+                for section in get_sections(text):
+                    if section.__len__() > 500:
+                        num = section.rfind(".")
+                        if num > 500:
+                            return abs_clear(section[:num + 1])
+            else:
+                return abs_clear(text[abs_num+8:keywords_num])
         else:
             # print(text)
             abs=""
@@ -68,7 +74,6 @@ def get_abs(text):
             return abs_clear(abs)
     else:
         for section in get_sections(text):
-
             if section.__len__()>500:
                 num=section.rfind(".")
                 if num >500:
@@ -78,6 +83,7 @@ def get_sections(text):
     return text.split("\n\n")
 
 def abs_clear(abs):
+    print("clear---------------",abs)
     abs=abs.strip()
     if abs[0] == ":":
         abs = abs[1:]
@@ -106,14 +112,14 @@ def create_box(pdf_path):
         cv2.imwrite(image_path, image)
 
 if __name__ == "__main__":
-    create_box("C:/pdfs/dynamic/1a2dd1fa5d0511e9a9ca00ac37466cf9.pdf")
+    # create_box("C:/pdfs/dynamic/1a2dd1fa5d0511e9a9ca00ac37466cf9.pdf")
     # # print("a".isalpha())
-    # main('C:/temp/page_0.png', 'C:/temp')
-    # # for path in ocr_paths:
-    # #     print("===========",path)
-    # #     # print(pytesseract.image_to_string(path))
-    # #     print("+++++++++",get_abs(pytesseract.image_to_string(path)))
-    # # print(pytesseract.image_to_string("C:/temp/page_0.png"))
+    main('//10.3.1.106/机械0611/IEMS_GAO/httpfulltextkoreascholarcomServiceDownloadaspxpdfUVX3bx7AgE.pdf', 'C:/temp')
+    for path in ocr_paths:
+        print("===========",path)
+        # print(pytesseract.image_to_string(path))
+        print("+++++++++",get_abs(pytesseract.image_to_string(path)))
+    # print(pytesseract.image_to_string("C:/temp/page_0.png"))
     # box=pytesseract.image_to_data("C:/temp/page_0.png")
     # image=cv2.imread("C:/temp/page_0.png")
     #

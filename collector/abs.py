@@ -112,6 +112,10 @@ class excels():
             row_num=row+1
             print(row_num)
             path=self.r_sheet.cell(row_num,self.nums["path"]).value
+            abs=self.r_sheet.cell(row_num,self.nums["abstract"]).value
+            print(abs)
+            if abs!="":
+                continue
             if os.path.exists(path):
                 try:
                     print("读取PDF："+path+"...")
@@ -119,7 +123,7 @@ class excels():
                     # text=text.replace("\n"," ").replace("Abstract:","").replace("Abstract","").strip()
                     pdf_file=open(path, "rb")
                     pdf = PyPDF2.PdfFileReader(pdf_file, strict=False)
-                    if pdf.getNumPages()>10:
+                    if pdf.getNumPages()>100:
                         pdf_file.close()
                         continue
                     pdf_file.close()
@@ -167,7 +171,14 @@ def get_abs(text):
     if abs_num!=-1:
         keywords_num=text.lower().find("keywords")
         if keywords_num!=-1:
-            return abs_clear(text[abs_num+8:keywords_num])
+            if keywords_num<abs_num+8:
+                for section in get_sections(text):
+                    if section.__len__() > 500:
+                        num = section.rfind(".")
+                        if num > 500:
+                            return abs_clear(section[:num + 1])
+            else:
+                return abs_clear(text[abs_num+8:keywords_num])
         else:
             # print(text)
             abs=""
@@ -213,7 +224,7 @@ def run(excel_path):
 
 
 if __name__ == '__main__':
-    run("C:/temp/1.xls")
+    run("C:/temp/222.xls")
     # path="C:/pdfs/iccm"
     # c_path="C:/temp/train"
     # for file in os.listdir(path):

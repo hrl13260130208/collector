@@ -388,14 +388,14 @@ class type_default_parser(common_type_parser):
 
 
 
-
-def get_proxy():
-    try:
-        response = requests.get(PROXY_POOL_URL)
-        if response.status_code == 200:
-            return response.text
-    except ConnectionError:
-        return None
+#
+# def get_proxy():
+#     try:
+#         response = requests.get(PROXY_POOL_URL)
+#         if response.status_code == 200:
+#             return response.text
+#     except ConnectionError:
+#         return None
 
 
 header={"User-Agent": fake.user_agent()}
@@ -403,9 +403,9 @@ header={"User-Agent": fake.user_agent()}
 
 def get_html(url):
     time.sleep(random.random()*3+1)
-    print("========",url)
+    # print("========",url)
     data = requests.get(url,headers=header,verify=False,timeout=60)
-    print(data.text)
+    # print(data.text)
     data.encoding = 'utf-8'
     datatext = data.text
     data.close()
@@ -423,41 +423,41 @@ def download(url, file):
 def checkpdf(file):
     pdf = PyPDF2.PdfFileReader(open(file,"rb"),strict=False)
     return pdf.getNumPages()
+#
+# def get_data(url):
+#     try:
+#         print("======")
+#         proip=find_proxy_ip()
+#         return  requests.get(url, headers=header, proxies=proip,verify=False, timeout=60)
+#     except:
+#
+#         return retry(url)
 
-def get_data(url):
-    try:
-        print("======")
-        proip=find_proxy_ip()
-        return  requests.get(url, headers=header, proxies=proip,verify=False, timeout=60)
-    except:
+# def retry(url):
+#     for i in range(5):
+#         try:
+#             print("+++++++=")
+#             proip = find_proxy_ip()
+#             return requests.get(url, headers=header, proxies=proip, verify=False, timeout=60)
+#         except:
+#             print("重试失败！")
 
-        return retry(url)
-
-def retry(url):
-    for i in range(5):
-        try:
-            print("+++++++=")
-            proip = find_proxy_ip()
-            return requests.get(url, headers=header, proxies=proip, verify=False, timeout=60)
-        except:
-            print("重试失败！")
-
-def find_proxy_ip():
-    while(True):
-        try:
-            proip = {"http": "http://" + get_proxy()}
-            data = requests.get("http://icanhazip.com", proxies=proip, headers=header, verify=False, timeout=30)
-        except:
-            print("获取ip失败！")
-            continue
-        return proip
+# def find_proxy_ip():
+#     while(True):
+#         try:
+#             proip = {"http": "http://" + get_proxy()}
+#             data = requests.get("http://icanhazip.com", proxies=proip, headers=header, verify=False, timeout=30)
+#         except:
+#             print("获取ip失败！")
+#             continue
+#         return proip
 
 if __name__ == '__main__':
     # pdf = PyPDF2.PdfFileReader(open("C:/File/0GCoGDKpMO3X.pdf", "rb"), strict=False)
     # print(pdf.getPage(2).extractText())
     # print(type(get_proxy()))
     url="https://www.tandfonline.com/doi/full/10.1002/ehs2.1211"
-    print(retry(url).text)
+    # print(retry(url).text)
     # print(get_data(url).text)
     # cp=config_parser()
     # res=cp.get_section("test")

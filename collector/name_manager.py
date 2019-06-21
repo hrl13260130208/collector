@@ -253,7 +253,7 @@ class url_manager():
 
 if __name__ == '__main__':
     # for key in redis_.keys("*"):
-    #     # redis_.delete(key)
+    #     redis_.delete(key)
     #     # print(key ,redis_.type(key))
     #     if redis_.type(key) == "string":
     #         print(key,redis_.get(key))
@@ -263,8 +263,8 @@ if __name__ == '__main__':
     #         print(key ," : ",redis_.llen(key)," : ")#, redis_.lrange(key,0,100))
 
 
-    collect.check_task("hs0610-c2")
-    collect.check_finsh_task("hs0610-c2")
+    collect.check_task("hs0610")
+    collect.check_finsh_task("hs0610")
 
 
     # collect.check_conf()

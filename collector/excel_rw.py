@@ -130,7 +130,7 @@ if __name__ == '__main__':
     # ex=excels(file_path,um)
     # ex.read()
     # ex.write()
-    write_pages("C:/public/大回溯待采全文-2（16908）.xls")
+    write_pages("C:/public/目次采全文/0610-合.xls")
 
 
 
