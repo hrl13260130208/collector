@@ -8,14 +8,14 @@ import collector.htmls as htmls
 
 if __name__ == '__main__':
 
-    name = "zx0621-c1"
+    name = "hg0621-c1"
 
     # file_path = "F:/hrl/mc/0121/冶金所待补全文清单_20190121..xls"
     # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
     # file_path = "F:/hrl/mc/0311/中信所待补全文清单_20190311..xls"
     # file_path = "F:/hrl/mc/other/pmc2018-2019待采全文的文章清单.xls"
     # file_path = "F:/hrl/mc/other/gruyter2018-2019待采全文的文章清单.xls"
-    file_path = "C:/public/目次采全文/0617/zx-拆1.xls"
+    file_path = "C:/public/目次采全文/0617/hg-拆1.xls"
 
     # check_task(name)
     cp = htmls.config_parser()

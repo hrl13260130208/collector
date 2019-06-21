@@ -107,8 +107,8 @@ def run_thread(name,file_path):
         elif url_set_name == "IEEE":
             th= threads.IEEE_download(url_set_name, um, tm, dir)
         elif url_set_name == "Doaj":
-            pass
-            # th = threads.Single_thread(url_set_name, um, tm, dir)
+            # pass
+            th = threads.Single_thread(url_set_name, um, tm, dir)
         else:
             th = threads.download_url(url_set_name, um, tm)
         fu=executor.submit(th.run)
@@ -160,9 +160,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://dx.doi.org/10.1016/S0370-2693(13)00912-X"
+    url_="https://pubs.rsc.org/en/content/articlehtml/2018/ra/c8ra03375g"
 
-    section="Elsevier_1028-4559-1875-6263"
+    section="common_2"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
@@ -173,26 +173,26 @@ def test_download():
 
 
 if __name__ == '__main__':
+    #
+    # name = "yj0621-c1"
+    # # name = "test"
+    # # name = "yj0329"
+    # # name = "jx0122"
+    #
+    # # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/0329/冶金所待补全文清单_20190329..xls"
+    # # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
+    #
+    # # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
+    # file_path = "C:/public/目次采全文/0617/yj-拆1.xls"
+    # # file_path = "C:/public/目次采全文/temp.xls"
+    #
+    # #check_task(name)
+    # cp=htmls.config_parser()
+    # cp.paser()
+    # run_thread(name,file_path)
+    # cp.backup()
 
-    name = "yj0621-c1"
-    # name = "test"
-    # name = "yj0329"
-    # name = "jx0122"
-
-    # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/0329/冶金所待补全文清单_20190329..xls"
-    # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
-
-    # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
-    file_path = "C:/public/目次采全文/0617/yj-拆1.xls"
-    # file_path = "C:/public/目次采全文/temp.xls"
-
-    #check_task(name)
-    cp=htmls.config_parser()
-    cp.paser()
-    run_thread(name,file_path)
-    cp.backup()
-
-    # test_download()
+    test_download()
 
 
 
