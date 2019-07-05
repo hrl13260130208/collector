@@ -11,6 +11,16 @@ import re
 import random
 from bs4 import BeautifulSoup
 
+class EXCEL_ITEM:
+    SOURCENAME="SOURCENAME"
+    ISSN="ISSN"
+    EISSN="EISSN"
+    WAIBUAID="WAIBUAID"
+    PINJIE="PINJIE"
+    FULL_URL="FULL_URL"
+    ABS_URL="ABS_URL"
+    FULL_PATH="FULL_PATH"
+
 logger = logging.getLogger("logger")
 class download_url(threading.Thread):
     def __init__(self,sourcename,um,tm):
@@ -31,42 +41,25 @@ class download_url(threading.Thread):
                 break
             eb=nm.execl_bean()
             eb.paser(string)
-            url=""
+            url_dict={}
             if eb.sourcename == "PMC":
-                if eb.waibuaid =="":
-                    if eb.abs_url!="":
-                        url=eb.abs_url
-                    else:
-                        url=eb.pinjie
-                else:
-                    url="https://www.ncbi.nlm.nih.gov/pmc/articles/"+eb.waibuaid
+                if eb.waibuaid!="":
+                    url_dict[EXCEL_ITEM.WAIBUAID]="https://www.ncbi.nlm.nih.gov/pmc/articles/"+eb.waibuaid
                 # url = eb.pinjie
-            else:
-                if eb.abs_url!="":
-                    url=eb.abs_url
-                else:
-                    url= eb.pinjie
-
+            if eb.abs_url!="":
+                url_dict[EXCEL_ITEM.ABS_URL]=eb.abs_url
+            if eb.full_url!="":
+                url_dict[EXCEL_ITEM.FULL_URL]=eb.full_url
+            if eb.pinjie!="":
+                url_dict[EXCEL_ITEM.PINJIE]=eb.pinjie
 
             jcb = nm.json_conf_bean(eb.sourcename, eb.eissn)
-            html_=htmls.HTML(eb,jcb,self.tm)
+            html_=htmls.HTML(eb,jcb,self.tm,self.sourcename)
             try:
-                if eb.full_url == "":
-                    logger.info("URL_THREAD - "+self.name+" - "+self.sourcename+" get download url form: "+url)
-                    full_url=html_.run(url)
-                else:
-                    if html_.test_full_url(eb.full_url):
-                        full_url=eb.full_url
-                    else:
-                        full_url = html_.run(eb.full_url)
-
-            except NoConfError:
-                logger.info(eb.sourcename+" "+eb.eissn+" 无可用的conf.")
-                eb.err_and_step=str(self.step)+"：  无可用的conf"
-                self.um.save(eb, self.err_step)
-                continue
-            except Exception as e:
-                logger.error(self.sourcename +" download url " + url + " has err",exc_info = True)
+                logger.info("URL_THREAD - " + self.name + " - " + self.sourcename + " get download url form: " + str(url_dict))
+                url,full_url=parser_url(url_dict,html_)
+            except :
+                logger.error(self.sourcename +" download url has err！",exc_info = True)
                 if eb.retry <collect.DOWNLOAD_URL_RETRY:
                     logger.info("retry time:"+str(eb.retry))
                     eb.retry += 1
@@ -78,9 +71,45 @@ class download_url(threading.Thread):
                 continue
 
             eb.full_url = full_url
+            # eb.full_url = eb.pinjie
             eb.abs_url = url
             self.um.save(eb,self.step)
         logger.info("URL_THREAD - "+self.name+" - "+self.sourcename + " download_url finsh.")
+
+def parser_url(url_dict,html_):
+    '''
+    解析urls
+    :param url_dict:
+    :param html_:
+    :return:
+    '''
+    # if eb.full_url == "":
+    #
+    #     full_url = html_.run(url)
+    # else:
+    #     if html_.test_full_url(eb.full_url):
+    #         full_url = eb.full_url
+    #     else:
+    #         full_url = html_.run(eb.full_url)
+
+
+
+
+    for key in url_dict.keys():
+        try:
+            if html_.test_full_url(url_dict[key]):
+                return url_dict[key], url_dict[key]
+            else:
+                return url_dict[key],html_.run(url_dict[key])
+        except:
+            logger.error(key+" 下载出错，尝试其他url...",exc_info = True)
+
+    raise ValueError("无法解析出PDF的url！")
+
+
+
+
+
 
 
 class download(threading.Thread):
@@ -166,36 +195,38 @@ class Elsevier_download(threading.Thread):
         return self.dir+suid+".pdf"
 
     def run(self):
-        logger.info(self.sourcename + " download_url start...")
+        logger.info(self.sourcename + " start...")
         while (True):
             string = self.um.get_eb(self.url_set_name)
             if string == None:
                 break
+
+            file_path = self.creat_filename()
             eb = nm.execl_bean()
             eb.paser(string)
+            url_dict = {}
+            if eb.sourcename == "PMC":
+                if eb.waibuaid != "":
+                    url_dict[EXCEL_ITEM.WAIBUAID] = "https://www.ncbi.nlm.nih.gov/pmc/articles/" + eb.waibuaid
+                # url = eb.pinjie
+            if eb.abs_url != "":
+                url_dict[EXCEL_ITEM.ABS_URL] = eb.abs_url
+            if eb.full_url != "":
+                url_dict[EXCEL_ITEM.FULL_URL] = eb.full_url
+            if eb.pinjie != "":
+                url_dict[EXCEL_ITEM.PINJIE] = eb.pinjie
 
-            url = eb.pinjie
-
-            jcb =nm.json_conf_bean(eb.sourcename, eb.eissn)
-            file_path = self.creat_filename()
-            html_ = htmls.HTML(eb, jcb, self.tm)
+            jcb = nm.json_conf_bean(eb.sourcename, eb.eissn)
+            html_ = htmls.HTML(eb, jcb, self.tm, self.sourcename)
             try:
-                logger.info(self.sourcename + "get download url form: " + url)
-                if eb.full_url == "":
-                    logger.info("URL_THREAD - "+self.name+" - "+self.sourcename+" get download url form: "+url)
-                    full_url=html_.run(url)
-                else:
-                    if html_.test_full_url(eb.full_url):
-                        full_url=eb.full_url
-                    else:
-                        full_url = html_.run(eb.full_url)
-                # full_url = htmls.HTML(eb, jcb, self.tm).run(url)
+                logger.info(
+                    "URL_THREAD - " + self.name + " - " + self.sourcename + " get download url form: " + str(url_dict))
+                url, full_url = parser_url(url_dict, html_)
                 htmls.download(full_url, file_path)
                 eb.page = htmls.checkpdf(file_path)
             except NoConfError:
-                logger.info(eb.eissn + " 无可用的conf.")
-                eb.err_and_step = str(self.url_step) + "：  无可用的conf"
-                self.um.save(eb, self.err_step)
+                logger.info(self.sourcename +"-"+eb.eissn + " 无可用的conf.")
+                continue
             except Exception as e:
                 logger.error(self.sourcename + " download url " + url + " has err", exc_info=True)
                 if eb.retry < collect.DOWNLOAD_URL_RETRY:
@@ -207,6 +238,7 @@ class Elsevier_download(threading.Thread):
                     self.um.save(eb, self.err_step)
                 continue
 
+            logger.info("URL_THREAD - "+self.name+" - "+self.sourcename+" 下载成功！")
             eb.full_url = full_url
             eb.abs_url = url
             eb.full_path = file_path[8:]
@@ -317,7 +349,7 @@ class Single_thread(threading.Thread):
             jcb =nm.json_conf_bean(eb.sourcename, eb.eissn)
             file_path = self.creat_filename()
             try:
-                html_=htmls.HTML(eb,jcb,self.tm)
+                html_=htmls.HTML(eb,jcb,self.tm,self.sourcename)
                 if eb.full_url == "":
                     # logger.info("URL_THREAD - "+self.name+" - "+self.sourcename+" get download url form: "+url)
                     print("+++++++++++++++++")

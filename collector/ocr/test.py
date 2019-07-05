@@ -114,12 +114,12 @@ def create_box(pdf_path):
 if __name__ == "__main__":
     # create_box("C:/pdfs/dynamic/1a2dd1fa5d0511e9a9ca00ac37466cf9.pdf")
     # # print("a".isalpha())
-    main('//10.3.1.106/机械0611/IEMS_GAO/httpfulltextkoreascholarcomServiceDownloadaspxpdfUVX3bx7AgE.pdf', 'C:/temp')
-    for path in ocr_paths:
-        print("===========",path)
-        # print(pytesseract.image_to_string(path))
-        print("+++++++++",get_abs(pytesseract.image_to_string(path)))
-    # print(pytesseract.image_to_string("C:/temp/page_0.png"))
+    # main('C:/temp/新建文件夹/0kKzRNRpJayT.pdf', 'C:/temp')
+    # for path in ocr_paths:
+    #     print("===========",path)
+    #     print(pytesseract.image_to_string(path,lang="jpn"))
+    #     print("+++++++++",get_abs(pytesseract.image_to_string(path,lang="jpn")))
+    print(pytesseract.image_to_string("C:/temp/12.png",lang="jpn"))
     # box=pytesseract.image_to_data("C:/temp/page_0.png")
     # image=cv2.imread("C:/temp/page_0.png")
     #

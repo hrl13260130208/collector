@@ -262,9 +262,10 @@ if __name__ == '__main__':
     #     elif redis_.type(key) =="list":
     #         print(key ," : ",redis_.llen(key)," : ")#, redis_.lrange(key,0,100))
 
-
-    collect.check_task("zx0621-c3")
-    collect.check_finsh_task("zx0621-c3")
+    #
+    collect.check_task("zx0621-c1")
+    collect.check_finsh_task("zx0621-c1")
+    # print(redis_.keys("zx0621-c2"))
 
 
     # collect.check_conf()

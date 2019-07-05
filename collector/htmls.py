@@ -74,33 +74,34 @@ class config_parser():
 
 
 class HTML():
-    def __init__(self,eb,jcb,tm):
+    def __init__(self,eb,jcb,tm,sn):
         self.eb=eb
         self.jcb=jcb
         self.tm=tm
+        self.sn=sn
 
     def run(self,url):
         if self.load(self.jcb):
-            logger.info("load secuess")
+            logger.info(self.sn+" load secuess!")
             return self.do_run(self.jcb.conf,url)
         else:
-            logger.info("load faild,test default confs...")
+            logger.info(self.sn+" load faild,test default confs...")
             confs=self.tm.get_default(self.jcb)
             for conf in confs:
                 new_jcb=name_manager.json_conf_bean(self.jcb.get_sourcename(),self.eb.eissn)
                 new_jcb.paser(conf)
                 if self.test(new_jcb.conf,url):
-                    logger.info("find a conf form default!")
+                    logger.info(self.sn+" find a conf form default!")
                     self.tm.save(new_jcb)
                     return self.do_run(new_jcb.conf,url)
 
-            logger.info("test common confs...")
+            logger.info(self.sn+" test common confs...")
             confs = self.tm.get_common_conf()
             for conf in confs:
                 new_jcb = name_manager.json_conf_bean(self.jcb.get_sourcename(), self.eb.eissn)
                 new_jcb.paser(conf)
                 if self.test(new_jcb.conf, url):
-                    logger.info("find a conf form default!")
+                    logger.info(self.sn+" find a conf form default!")
                     self.tm.save(new_jcb)
                     return self.do_run(new_jcb.conf, url)
             logger.error("There is no conf available!")
@@ -123,7 +124,7 @@ class HTML():
             download(result,collect.test_file)
             checkpdf(collect.test_file)
         except:
-            logger.error(url+" has err: ",exc_info = True)
+            logger.error("test run:"+url+" has err: ",exc_info = True)
             result=None
         return result !=None
 
@@ -412,7 +413,7 @@ def get_html(url):
     return datatext,data.url
 
 def download(url, file):
-    time.sleep(random.random()*3+1)
+    # time.sleep(random.random()*3+1)
     # proip =find_proxy_ip()
     data = requests.get(url.strip(),headers=header,verify=False,timeout=30)
     # print(data.text)
@@ -456,7 +457,8 @@ if __name__ == '__main__':
     # pdf = PyPDF2.PdfFileReader(open("C:/File/0GCoGDKpMO3X.pdf", "rb"), strict=False)
     # print(pdf.getPage(2).extractText())
     # print(type(get_proxy()))
-    url="https://www.tandfonline.com/doi/full/10.1002/ehs2.1211"
+    url="http://hdl.handle.net/2060/19810069217"
+    download(url,"C:/File/sdf55.pdf")
     # print(retry(url).text)
     # print(get_data(url).text)
     # cp=config_parser()
@@ -481,7 +483,7 @@ if __name__ == '__main__':
     # else:
     #     print(h_url+m_url)
 
-    print(url[:-2])
+    # print(url[:-2])
 
 
 

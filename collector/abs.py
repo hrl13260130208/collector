@@ -11,6 +11,7 @@ from pdfminer.pdfinterp import PDFPageInterpreter
 from pdfminer.layout import *
 import re
 import xlrd
+import xlwt
 from  xlutils import copy
 import os
 import logging
@@ -86,7 +87,10 @@ class excels():
         self.file_path=file_path
         self.values=["path","abstract"]
         self.nums={}
+
         self.create()
+
+
 
     def create(self):
         rb = xlrd.open_workbook(self.file_path)
@@ -222,9 +226,51 @@ def run(excel_path):
     '''
     excels(excel_path).read()
 
+def run_dir(dir):
+    wb = xlwt.Workbook(encoding="utf-8")
+    sheet1=wb.add_sheet("sheet1")
+    sheet1.write(0, 0, "path")
+    sheet1.write(0, 1, "abstract")
+    for index,file in enumerate(os.listdir(dir)):
+        print(file)
+        path=os.path.join(dir,file)
+        print(path)
+
+
+        pdf_file = open(path, "rb")
+        pdf = PyPDF2.PdfFileReader(pdf_file, strict=False)
+        if pdf.getNumPages() > 100:
+            pdf_file.close()
+            continue
+        pdf_file.close()
+        text = ocr_read_jpn(path)
+        # text = text.replace("\n", " ")
+        # print(text)
+        # sheet1.write(index+1,0,path)
+        # sheet1.write(index+1,1,text)
+
+    wb.save("C:/temp/a.xls")
+
+def ocr_read_jpn(filename):
+    print('filename=', filename)
+    outputDir = "C:/temp/png"
+
+    images = convert_from_path(filename)
+    for index, img in enumerate(images):
+        if index > 2:
+            break
+        image_path = '%s/page_%s.png' % (outputDir, index)
+        print(image_path)
+        img.save(image_path)
+        print(pytesseract.image_to_string(image_path))
+        # text = get_abs(pytesseract.image_to_string(image_path,lang="jpn"))
+        # if text != None:
+        #     return text
 
 if __name__ == '__main__':
-    run("C:/temp/222.xls")
+    # run("C:/execl/aae6.xlsx")
+    run("C:/public/目次采全文/0617/中信所缺失摘要清单_20190621..xls")
+    # run_dir("C:/temp/新建文件夹")
     # path="C:/pdfs/iccm"
     # c_path="C:/temp/train"
     # for file in os.listdir(path):

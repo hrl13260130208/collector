@@ -86,7 +86,20 @@ def start(name,file_path):
     execl.report()
     um.clear()
 
+
+def run_d_thread(name):
+    um = nm.url_manager(name)
+    tm = nm.template_manager()
+
+
 def run_thread(name,file_path):
+    '''
+    启动方法:
+        主机器启动：会读写excel
+    :param name:
+    :param file_path:
+    :return:
+    '''
     # name="test"
     # file_path="C:/temp/gruyter2018-2019待采全文的文章清单.xls"
     list = []
@@ -106,26 +119,51 @@ def run_thread(name,file_path):
             th = threads.Elsevier_download(url_set_name, um, tm, dir)
         elif url_set_name == "IEEE":
             th= threads.IEEE_download(url_set_name, um, tm, dir)
-        elif url_set_name == "Doaj":
-            # pass
-            th = threads.Single_thread(url_set_name, um, tm, dir)
+        # elif url_set_name == "Doaj":
+        #     # pass
+        #     th = threads.Single_thread(url_set_name, um, tm, dir)
         else:
             th = threads.download_url(url_set_name, um, tm)
-        fu=executor.submit(th.run)
-        list.append(fu)
+        list.append(th)
 
     sns = um.get_sourcenames()
     for sn in sns:
         if sn == "Elsevier"or sn == "IEEE":
             continue
         th = threads.download(sn, um, dir)
-        list.append(executor.submit(th.run))
+        list.append(th)
 
-    for fu in as_completed(list):
-        # print(fu.result())
-        if fu.exception() != None:
-            logger.error("程序异常，全部退出！")
-            exit(0)
+    for t in list:
+        t.start()
+    for t in list:
+        t.join()
+
+    # url_set_names = um.get_sourcenames()
+    # for url_set_name in url_set_names:
+    #     if url_set_name == "Elsevier":
+    #         th = threads.Elsevier_download(url_set_name, um, tm, dir)
+    #     elif url_set_name == "IEEE":
+    #         th= threads.IEEE_download(url_set_name, um, tm, dir)
+    #     # elif url_set_name == "Doaj":
+    #     #     # pass
+    #     #     th = threads.Single_thread(url_set_name, um, tm, dir)
+    #     else:
+    #         th = threads.download_url(url_set_name, um, tm)
+    #     fu=executor.submit(th.run)
+    #     list.append(fu)
+    #
+    # sns = um.get_sourcenames()
+    # for sn in sns:
+    #     if sn == "Elsevier"or sn == "IEEE":
+    #         continue
+    #     th = threads.download(sn, um, dir)
+    #     list.append(executor.submit(th.run))
+    #
+    # for fu in as_completed(list):
+    #     # print(fu.result())
+    #     if fu.exception() != None:
+    #         logger.error("程序异常，全部退出！")
+    #         exit(0)
 
     delte_error_pdf(um)
     execl.write()
@@ -160,39 +198,40 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="https://pubs.rsc.org/en/content/articlehtml/2018/ra/c8ra03375g"
+    url_="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6269292"
 
     section="common_2"
     cp=htmls.config_parser()
     cp.get_section(section)
-    d_url=htmls.HTML(None,None,None).do_run(cp.get_section(section),url_)
-    # d_url="http://www.ejmanager.com/fulltextpdf.php?mno=298304"
+    d_url=htmls.HTML(None,None,None,"test").do_run(cp.get_section(section),url_)
+    # d_url="http://hdl.handle.net/2060/19810069217"
     print(d_url)
     htmls.download(d_url.strip(),test_file)
     print(htmls.checkpdf(test_file))
 
 
 if __name__ == '__main__':
-    #
-    # name = "yj0621-c1"
-    # # name = "test"
-    # # name = "yj0329"
-    # # name = "jx0122"
-    #
-    # # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/0329/冶金所待补全文清单_20190329..xls"
-    # # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
-    #
-    # # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
-    # file_path = "C:/public/目次采全文/0617/yj-拆1.xls"
-    # # file_path = "C:/public/目次采全文/temp.xls"
-    #
-    # #check_task(name)
-    # cp=htmls.config_parser()
-    # cp.paser()
-    # run_thread(name,file_path)
-    # cp.backup()
 
-    test_download()
+    # name = "zx0621-c1"
+    name = "test"
+    # name = "yj0329"
+    # name = "jx0122"
+
+    # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/0329/冶金所待补全文清单_20190329..xls"
+    # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
+
+    # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
+    # file_path = "C:/public/目次采全文/0617/zxc1.xls"
+
+    file_path = "C:/temp/1.xls"
+
+    #check_task(name)
+    cp=htmls.config_parser()
+    cp.paser()
+    run_thread(name,file_path)
+    cp.backup()
+
+    # test_download()
 
 
 

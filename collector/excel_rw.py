@@ -8,6 +8,7 @@ import os
 
 
 
+
 logger = logging.getLogger("logger")
 class excels():
     def __init__(self,file_path,um):
@@ -102,7 +103,7 @@ class excels():
 
         logger.info("report文件写入完成。")
 
-def write_pages(excel_name):
+def write_pages_and_absurl(excel_name):
     rb = xlrd.open_workbook(excel_name)
     r_sheet = rb.sheet_by_index(0)
     wb = copy.copy(rb)
@@ -111,15 +112,29 @@ def write_pages(excel_name):
 
     total_pages_num = list.index("TOTALPAGES")
     pages_num = list.index("page")
+    absurlnum=list.index("ABS_URL")
+    url_num=list.index("PINJIE")
+    pmc_num=list.index("WAIBUAID")
+    sn_num=list.index("SOURCENAME")
 
     for row in range(r_sheet.nrows - 1):
         tp=r_sheet.cell(row+1,total_pages_num)
+        abs_url=r_sheet.cell(row+1,absurlnum).value
         print("==============",tp.value)
         if tp.value=="":
             page=r_sheet.cell(row+1,pages_num)
             print(page)
             if page.value!="":
                 w_sheet.write(row+1,total_pages_num,page.value)
+        sn = r_sheet.cell(row + 1, sn_num)
+        print(sn)
+        if abs_url=="":
+            sn=r_sheet.cell(row+1,sn_num)
+            print(sn.value)
+            if sn.value=="PMC":
+                w_sheet.write(row + 1, absurlnum,"https://www.ncbi.nlm.nih.gov/pmc/articles/"+r_sheet.cell(row+1,pmc_num).value)
+            else:
+                w_sheet.write(row + 1, absurlnum, r_sheet.cell(row + 1,url_num).value)
 
     wb.save(excel_name)
 
@@ -130,7 +145,7 @@ if __name__ == '__main__':
     # ex=excels(file_path,um)
     # ex.read()
     # ex.write()
-    write_pages("C:/public/目次采全文/0610-合.xls")
+    write_pages_and_absurl("C:/public/目次采全文/0617/中信所待补全文清单_20190621..xls")
 
 
 
