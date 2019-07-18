@@ -107,7 +107,7 @@ def run_thread(name,file_path):
     um = nm.url_manager(name)
     tm = nm.template_manager()
     execl = excel_rw.excels(file_path, um)
-    delte_error_pdf(um)
+    # delte_error_pdf(um)
     execl.write()
     um.clear()
     execl.read()
@@ -165,7 +165,7 @@ def run_thread(name,file_path):
     #         logger.error("程序异常，全部退出！")
     #         exit(0)
 
-    delte_error_pdf(um)
+    # delte_error_pdf(um)
     execl.write()
     execl.report()
     um.clear()

@@ -12,6 +12,8 @@ import urllib.parse as parse
 import random
 from collector import collect
 import re
+import os
+
 
 fake = faker.Factory.create()
 PROXY_POOL_URL= 'http://localhost:5555/random'
@@ -422,8 +424,22 @@ def download(url, file):
     file.write(data.content)
 
 def checkpdf(file):
-    pdf = PyPDF2.PdfFileReader(open(file,"rb"),strict=False)
-    return pdf.getNumPages()
+
+    try:
+        pdffile = open(file, "rb+")
+        pdf = PyPDF2.PdfFileReader(pdffile, strict=False)
+        num=pdf.getNumPages()
+        pdffile.close()
+        return num
+    except:
+        logger.error("PDF下载出错。", exc_info=True)
+        try:
+            pdffile.close()
+            os.remove(file)
+        except:
+            logger.error("PDF删除出错：", exc_info=True)
+        raise ValueError("PDF出错！")
+
 #
 # def get_data(url):
 #     try:

@@ -72,6 +72,7 @@ class excels():
         logger.info("execl读取完成。")
 
     def write(self):
+        back_file=open(self.file_path.replace(".xls","_back.txt"),"w+")
         logger.info("写入execl...")
         for sn in self.um.get_sourcenames():
             while (True):
@@ -79,6 +80,7 @@ class excels():
                 string = self.um.get_eb(url_name)
                 if string == None:
                     break
+                back_file.write(string+"\n")
                 eb =name_manager.execl_bean()
                 eb.paser(string)
                 if os.path.exists(collect.first_dir+eb.full_path):

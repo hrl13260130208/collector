@@ -14,7 +14,7 @@ if __name__ == '__main__':
         path = "C:/pdfs/"+line.replace("\n", "")
         print(path)
         if os.path.exists(path):
-            file_name=path[path.rfind("/"):]
+            file_name=line.replace("\n", "")
             print("复制文件："+file_name)
             shutil.copyfile(path,copy_path+file_name)
 

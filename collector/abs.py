@@ -17,7 +17,7 @@ import os
 import logging
 import PyPDF2
 from pdf2image import convert_from_path
-import tempfile
+import string
 import pytesseract
 
 logging.basicConfig(level = logging.ERROR,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -201,18 +201,56 @@ def get_abs(text):
                 num=section.rfind(".")
                 if num >500:
                     return abs_clear(section[:num+1])
+
+
 def get_sections(text):
     return text.split("\n\n")
 
+def is_abs(abs):
+    d = u = l = o = 0
+    print("---------------------------")
+
+    if "@" in abs:
+        print("有@符号！")
+        return False
+    for i in range(len(abs)):
+        if abs[i] in string.digits:
+            d += 1
+        elif abs[i] in string.ascii_uppercase:
+            u += 1
+        elif abs[i] in string.ascii_lowercase:
+            l += 1
+        elif abs[i] in string.punctuation:
+            o += 1
+
+    print("数字：",d,d/abs.__len__())
+    if d/abs.__len__()>0.01:
+        return False
+    print("大写字母：",u,u/abs.__len__())
+    if u/ abs.__len__() > 0.05:
+        return False
+    print("小写字母：",l,l/abs.__len__())
+    print("标点特殊字符：",o,o/abs.__len__())
+    if u/ abs.__len__() > 0.1:
+        return False
+
+    return True
+
+
+
+
 def abs_clear(abs):
-    abs=abs_head_clear(abs.strip())
-    print("last char:",abs[-1])
-    if abs[-1] !="." and abs[-1] !="。":
-        abs=abs+"."
-    return abs
+    if is_abs(abs):
+        abs=abs_head_clear(abs.strip())
+        print("last char:",abs[-1])
+        if abs[-1] !="." and abs[-1] !="。":
+            abs=abs+"."
+        return abs
 def abs_head_clear(abs):
     if abs[0].isalpha():
-         return abs
+        if abs[0].islower():
+            abs=abs[0].upper()+abs[1:]
+        return abs
     else:
         return abs_head_clear(abs[1:])
 def run(excel_path):
@@ -269,7 +307,8 @@ def ocr_read_jpn(filename):
 
 if __name__ == '__main__':
     # run("C:/execl/aae6.xlsx")
-    run("C:/public/目次采全文/0617/中信所缺失摘要清单_20190621..xls")
+    # run("C:/public/目次采全文/0617/中信所缺失摘要清单_20190621..xls")
+    print(ocr_read("G:/hrl/0621/中信/zx0621-c3/4efec686940f11e9abe8b083fe6ed898.pdf"))
     # run_dir("C:/temp/新建文件夹")
     # path="C:/pdfs/iccm"
     # c_path="C:/temp/train"
