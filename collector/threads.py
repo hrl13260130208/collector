@@ -53,27 +53,27 @@ class download_url(threading.Thread):
             if eb.pinjie!="":
                 url_dict[EXCEL_ITEM.PINJIE]=eb.pinjie
 
-            # jcb = nm.json_conf_bean(eb.sourcename, eb.eissn)
-            # html_=htmls.HTML(eb,jcb,self.tm,self.sourcename)
-            # try:
-            #     logger.info("URL_THREAD - " + self.name + " - " + self.sourcename + " get download url form: " + str(url_dict))
-            #     url,full_url=parser_url(url_dict,html_)
-            # except :
-            #     logger.error(self.sourcename +" download url has err！",exc_info = True)
-            #     if eb.retry <collect.DOWNLOAD_URL_RETRY:
-            #         logger.info("retry time:"+str(eb.retry))
-            #         eb.retry += 1
-            #         self.um.save(eb,self.step-1)
-            #     else:
-            #         logger.info("retry:" +str(eb.retry)+ ".retry次数超过5次，不再重试。")
-            #         eb.err_and_step = str(self.step) + "：请求下载url错误超过五次"
-            #         self.um.save(eb,self.err_step)
-            #     continue
-            #
-            # eb.full_url = full_url
-            # eb.abs_url = url
-            eb.full_url = eb.pinjie
-            eb.abs_url = eb.pinjie
+            jcb = nm.json_conf_bean(eb.sourcename, eb.eissn)
+            html_=htmls.HTML(eb,jcb,self.tm,self.sourcename)
+            try:
+                logger.info("URL_THREAD - " + self.name + " - " + self.sourcename + " get download url form: " + str(url_dict))
+                url,full_url=parser_url(url_dict,html_)
+            except :
+                logger.error(self.sourcename +" download url has err！",exc_info = True)
+                if eb.retry <collect.DOWNLOAD_URL_RETRY:
+                    logger.info("retry time:"+str(eb.retry))
+                    eb.retry += 1
+                    self.um.save(eb,self.step-1)
+                else:
+                    logger.info("retry:" +str(eb.retry)+ ".retry次数超过5次，不再重试。")
+                    eb.err_and_step = str(self.step) + "：请求下载url错误超过五次"
+                    self.um.save(eb,self.err_step)
+                continue
+
+            eb.full_url = full_url
+            eb.abs_url = url
+            # eb.full_url = eb.pinjie
+            # eb.abs_url = eb.pinjie
             self.um.save(eb,self.step)
         logger.info("URL_THREAD - "+self.name+" - "+self.sourcename + " download_url finsh.")
 
