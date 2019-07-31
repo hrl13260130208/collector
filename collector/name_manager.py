@@ -2,10 +2,10 @@
 import redis
 import json
 from collector import collect
-import requests
 
 redis_ = redis.Redis(host="10.3.1.99", port=6379, db=1,decode_responses=True)
-# redis_ = redis.Redis(host="10.3.1.99", port=6379 ,decode_responses=True)
+# redis_ = redis.Redis(host="localhost", port=6379, db=1,decode_responses=True)
+
 
 class conf_bean():
     def __init__(self,sourcename,eissn):
@@ -263,8 +263,8 @@ if __name__ == '__main__':
     #         print(key ," : ",redis_.llen(key)," : ")#, redis_.lrange(key,0,100))
 
     #
-    collect.check_task("zx0621-c1")
-    collect.check_finsh_task("zx0621-c1")
+    collect.check_task("zx0723-c1")
+    collect.check_finsh_task("zx0723-c1")
     # print(redis_.keys("zx0621-c2"))
 
 

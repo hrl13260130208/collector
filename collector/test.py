@@ -1,10 +1,6 @@
 #!/usr/bin/python
 #-*- coding: utf-8 -*-
 
-from  docx import Document
-import pytesseract
-
-
 
 def create_arff(file_path,attrs,name):
     arff_file=open("C:/temp/"+name+".arff","w+")

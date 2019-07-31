@@ -7,16 +7,9 @@ import collector.htmls as htmls
 # print(redis_.keys("*"))
 
 if __name__ == '__main__':
+    name = "osti_7"
 
-    # name = "hg0621-c1"
-    name = "jx0621"
-
-    # file_path = "F:/hrl/mc/0121/冶金所待补全文清单_20190121..xls"
-    # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
-    # file_path = "F:/hrl/mc/0311/中信所待补全文清单_20190311..xls"
-    # file_path = "F:/hrl/mc/other/pmc2018-2019待采全文的文章清单.xls"
-    # file_path = "F:/hrl/mc/other/gruyter2018-2019待采全文的文章清单.xls"
-    file_path = "C:/public/目次采全文/0617/机械所待补全文清单_20190621..xls"
+    file_path = r"C:\public\目次采全文\0730\osti_7.xls"
 
     # check_task(name)
     cp = htmls.config_parser()

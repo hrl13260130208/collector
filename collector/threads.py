@@ -45,7 +45,6 @@ class download_url(threading.Thread):
             if eb.sourcename == "PMC":
                 if eb.waibuaid!="":
                     url_dict[EXCEL_ITEM.WAIBUAID]="https://www.ncbi.nlm.nih.gov/pmc/articles/"+eb.waibuaid
-                # url = eb.pinjie
             if eb.abs_url!="":
                 url_dict[EXCEL_ITEM.ABS_URL]=eb.abs_url
             if eb.full_url!="":
@@ -84,18 +83,6 @@ def parser_url(url_dict,html_):
     :param html_:
     :return:
     '''
-    # if eb.full_url == "":
-    #
-    #     full_url = html_.run(url)
-    # else:
-    #     if html_.test_full_url(eb.full_url):
-    #         full_url = eb.full_url
-    #     else:
-    #         full_url = html_.run(eb.full_url)
-
-
-
-
     for key in url_dict.keys():
         try:
             if html_.test_full_url(url_dict[key]):
@@ -106,12 +93,6 @@ def parser_url(url_dict,html_):
             logger.error(key+" 下载出错，尝试其他url...",exc_info = True)
 
     raise ValueError("无法解析出PDF的url！")
-
-
-
-
-
-
 
 class download(threading.Thread):
     def __init__(self,sourcename,um,dir):
@@ -169,7 +150,8 @@ class download(threading.Thread):
                     eb.err_and_step = str(self.step) + "：pdf不完整，重下超过指定次数"
                     self.um.save(eb,self.err_step)
                 continue
-            eb.full_path=file_path[8:]
+            dirs = file_path.split("/")
+            eb.full_path = dirs[-2] + "/" + dirs[-1]
             self.um.save(eb,self.step)
         logger.info("URL_THREAD - "+self.name+" - "+self.sourcename + " download finsh.")
 
@@ -206,10 +188,7 @@ class Elsevier_download(threading.Thread):
             eb = nm.execl_bean()
             eb.paser(string)
             url_dict = {}
-            if eb.sourcename == "PMC":
-                if eb.waibuaid != "":
-                    url_dict[EXCEL_ITEM.WAIBUAID] = "https://www.ncbi.nlm.nih.gov/pmc/articles/" + eb.waibuaid
-                # url = eb.pinjie
+
             if eb.abs_url != "":
                 url_dict[EXCEL_ITEM.ABS_URL] = eb.abs_url
             if eb.full_url != "":
@@ -242,7 +221,9 @@ class Elsevier_download(threading.Thread):
             logger.info("URL_THREAD - "+self.name+" - "+self.sourcename+" 下载成功！")
             eb.full_url = full_url
             eb.abs_url = url
-            eb.full_path = file_path[8:]
+
+            dirs = file_path.split("/")
+            eb.full_path = dirs[-2] + "/" + dirs[-1]
             self.um.save(eb, self.finsh_step)
 
 class IEEE_download(threading.Thread):
@@ -297,7 +278,8 @@ class IEEE_download(threading.Thread):
                 continue
             eb.full_url = d_url
             eb.abs_url = url
-            eb.full_path = file_path[8:]
+            dirs = file_path.split("/")
+            eb.full_path = dirs[-2] + "/" + dirs[-1]
             self.um.save(eb, self.finsh_step)
 
 
@@ -383,7 +365,93 @@ class Single_thread(threading.Thread):
 
             eb.full_url = full_url
             eb.abs_url = url
-            eb.full_path = file_path[8:]
+            dirs = file_path.split("/")
+            eb.full_path = dirs[-2] + "/" + dirs[-1]
+            self.um.save(eb, self.finsh_step)
+
+
+class OSTI(threading.Thread):
+    def __init__(self,sourcename,um,tm,dir):
+        threading.Thread.__init__(self)
+        self.dir=dir
+        self.sourcename = sourcename
+        self.um=um
+        self.finsh_step=2
+        self.err_step = 3
+        self.tm = tm
+        self.url_step = 1
+        self.url_set_name = um.fix(sourcename, self.url_step - 1)
+
+    def creat_filename(self):
+        uid=str(uuid.uuid1())
+        suid=''.join(uid.split('-'))
+        return self.dir+suid+".pdf"
+
+    def run(self):
+        logger.info(self.sourcename + " download_url start...")
+        while (True):
+            string = self.um.get_eb(self.url_set_name)
+            if string == None:
+                break
+            eb = nm.execl_bean()
+            eb.paser(string)
+            url = eb.pinjie
+
+            jcb =nm.json_conf_bean(eb.sourcename, eb.eissn)
+            file_path = self.creat_filename()
+            try:
+                time.sleep(random.random() * 3 + 1)
+                logger.info(self.sourcename+" 开始下载："+url)
+
+                r = requests.get(url)
+                c1 = r.cookies['BIGipServerlbapp_tc3']
+                c2 = r.cookies['BIGipServerwww.osti.gov_pool']
+                c3 = r.cookies['JSESSIONID']
+                soup = BeautifulSoup(r.text, "html.parser")
+
+                pdf_url = soup.find("meta", {"name": "citation_pdf_url"})["content"]
+                cookies = {
+                    'BIGipServerlbapp_tc3': c1,
+                    'BIGipServerwww.osti.gov_pool': c2,
+                    'JSESSIONID': c3,
+                    '__utma': '249692800.1749221367.1564467097.1564467097.1564467097.1',
+                    '__utmc': '249692800',
+                    '__utmz': '249692800.1564467097.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)',
+                    '_ga': 'GA1.2.1749221367.1564467097',
+                    '_gid': 'GA1.2.298248318.1564467099',
+                    '__utmt': '1',
+                    '__utmb': '249692800.63.10.1564467097'
+                }
+                time.sleep(random.random() * 3 + 1)
+                logger.info(self.sourcename+" 下载PDF："+pdf_url)
+
+                r2 = requests.get(pdf_url, cookies=cookies)
+                r2.encoding = 'utf-8'
+                file = open(file_path, "wb+")
+                file.write(r2.content)
+                file.close()
+                eb.page = htmls.checkpdf(file_path)
+                full_url=pdf_url
+
+            except NoConfError:
+                logger.info(eb.eissn + " 无可用的conf.")
+                eb.err_and_step = str(self.url_step) + "：  无可用的conf"
+                self.um.save(eb, self.err_step)
+            except Exception as e:
+                logger.error(self.sourcename + " download url " + url + " has err", exc_info=True)
+                if eb.retry < collect.DOWNLOAD_URL_RETRY:
+                    logger.info("retry time:" + str(eb.retry))
+                    eb.retry += 1
+                    self.um.save(eb, self.url_step - 1)
+                else:
+                    logger.info("retry:" + str(eb.retry) + ". retry次数超过5次，不再重试。")
+                    self.um.save(eb, self.err_step)
+                continue
+
+            eb.full_url = full_url
+            eb.abs_url = url
+            dirs = file_path.split("/")
+            eb.full_path = dirs[-2] + "/" + dirs[-1]
             self.um.save(eb, self.finsh_step)
 
 

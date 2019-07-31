@@ -4,10 +4,8 @@ from collector import threads
 from collector import htmls
 import os
 import logging
-import requests
-import time
-import threading
 from concurrent.futures import ThreadPoolExecutor,as_completed
+import requests
 
 
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -122,14 +120,17 @@ def run_thread(name,file_path):
         # elif url_set_name == "Doaj":
         #     # pass
         #     th = threads.Single_thread(url_set_name, um, tm, dir)
+        elif url_set_name=="osti":
+            th=threads.OSTI(url_set_name,um,tm,dir)
         else:
             th = threads.download_url(url_set_name, um, tm)
         list.append(th)
 
     sns = um.get_sourcenames()
     for sn in sns:
-        if sn == "Elsevier"or sn == "IEEE":
+        if sn == "Elsevier"or sn == "IEEE" or sn=="osti":
             continue
+
         th = threads.download(sn, um, dir)
         list.append(th)
 
@@ -138,34 +139,6 @@ def run_thread(name,file_path):
     for t in list:
         t.join()
 
-    # url_set_names = um.get_sourcenames()
-    # for url_set_name in url_set_names:
-    #     if url_set_name == "Elsevier":
-    #         th = threads.Elsevier_download(url_set_name, um, tm, dir)
-    #     elif url_set_name == "IEEE":
-    #         th= threads.IEEE_download(url_set_name, um, tm, dir)
-    #     # elif url_set_name == "Doaj":
-    #     #     # pass
-    #     #     th = threads.Single_thread(url_set_name, um, tm, dir)
-    #     else:
-    #         th = threads.download_url(url_set_name, um, tm)
-    #     fu=executor.submit(th.run)
-    #     list.append(fu)
-    #
-    # sns = um.get_sourcenames()
-    # for sn in sns:
-    #     if sn == "Elsevier"or sn == "IEEE":
-    #         continue
-    #     th = threads.download(sn, um, dir)
-    #     list.append(executor.submit(th.run))
-    #
-    # for fu in as_completed(list):
-    #     # print(fu.result())
-    #     if fu.exception() != None:
-    #         logger.error("程序异常，全部退出！")
-    #         exit(0)
-
-    # delte_error_pdf(um)
     execl.write()
     execl.report()
     um.clear()
@@ -198,22 +171,26 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6269292"
-
-    section="common_2"
-    cp=htmls.config_parser()
-    cp.get_section(section)
-    d_url=htmls.HTML(None,None,None,"test").do_run(cp.get_section(section),url_)
-    # d_url="http://hdl.handle.net/2060/19810069217"
+    # url_="https://www.osti.gov/biblio/4646168"
+    #
+    # section="common_1"
+    # cp=htmls.config_parser()
+    # cp.get_section(section)
+    # d_url=htmls.HTML(None,None,None,"test").do_run(cp.get_section(section),url_)
+    # d_url="https://www.osti.gov/servlets/purl/4646168"
+    d_url="https://www.osti.gov/biblio/4646168"
     print(d_url)
     htmls.download(d_url.strip(),test_file)
     print(htmls.checkpdf(test_file))
 
+def test_get_html():
+    url="http://dx.doi.org/10.1016/j.ekir.2019.05.594"
+    print(requests.get(url).text)
 
 if __name__ == '__main__':
 
-    # name = "zx0621-c1"
-    name = "test"
+    name = "osti_5"
+    # name = "test"
     # name = "yj0329"
     # name = "jx0122"
 
@@ -223,7 +200,7 @@ if __name__ == '__main__':
     # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
     # file_path = "C:/public/目次采全文/0617/zxc1.xls"
 
-    file_path = "C:/temp/1.xls"
+    file_path = r"C:\public\目次采全文\0730\osti_5.xls"
 
     #check_task(name)
     cp=htmls.config_parser()
@@ -232,7 +209,7 @@ if __name__ == '__main__':
     cp.backup()
 
     # test_download()
-
+    # test_get_html()
 
 
 

@@ -408,7 +408,7 @@ def get_html(url):
     time.sleep(random.random()*3+1)
     # print("========",url)
     data = requests.get(url,headers=header,verify=False,timeout=60)
-    # print(data.text)
+    print(data.cookies)
     data.encoding = 'utf-8'
     datatext = data.text
     data.close()
@@ -417,8 +417,12 @@ def get_html(url):
 def download(url, file):
     # time.sleep(random.random()*3+1)
     # proip =find_proxy_ip()
+    print(url)
+    # header={'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36',
+    #         "Cookie": "BIGipServerlbapp_tc3=3892314634.49300.0000; BIGipServerwww.osti.gov_pool=1132494278.20480.0000; __utma=249692800.1749221367.1564467097.1564467097.1564467097.1; __utmc=249692800; __utmz=249692800.1564467097.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); _ga=GA1.2.1749221367.1564467097; _gid=GA1.2.298248318.1564467099; JSESSIONID=1C4287BE446C33FB1B52F566B0983D04; __utmb=249692800.57.10.1564467097"}
     data = requests.get(url.strip(),headers=header,verify=False,timeout=30)
-    # print(data.text)
+    print(data.cookies)
+    print(data.text)
     data.encoding = 'utf-8'
     file = open(file, "wb+")
     file.write(data.content)

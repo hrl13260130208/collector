@@ -4,6 +4,7 @@ from collector import  name_manager
 import logging
 from collector import collect
 import os
+import xlwt
 
 
 
@@ -83,6 +84,7 @@ class excels():
                 back_file.write(string+"\n")
                 eb =name_manager.execl_bean()
                 eb.paser(string)
+                print(os.path.exists(collect.first_dir+eb.full_path))
                 if os.path.exists(collect.first_dir+eb.full_path):
                     self.w_sheet.write(eb.row_num,self.nums[5],eb.full_url)
                     self.w_sheet.write(eb.row_num,self.nums[6],eb.abs_url)
@@ -104,6 +106,10 @@ class excels():
                 file.write(string+"\n")
 
         logger.info("report文件写入完成。")
+
+    def pandas_read(self):
+        pass
+
 
 def write_pages_and_absurl(excel_name):
     rb = xlrd.open_workbook(excel_name)
@@ -140,6 +146,35 @@ def write_pages_and_absurl(excel_name):
 
     wb.save(excel_name)
 
+
+def create_excel():
+    file=open(r"C:\Users\zhaozhijie.CNPIEC\Documents\Tencent Files\2046391563\FileRecv\lyurl.txt","r")
+    values=["SOURCENAME","ISSN","EISSN","WAIBUAID","PINJIE","FULL_URL","ABS_URL","FULL_PATH"]
+    sourcename="osti"
+    issn="o1111"
+    index=0
+    excel_index=0
+    wb=None
+    sheet=None
+    for line in file.readlines():
+        if index==0:
+            wb=xlwt.Workbook(encoding="utf-8")
+            sheet=wb.add_sheet("Sheet1")
+            index+=1
+            for i,v in enumerate(values):
+                sheet.write(0,i,v)
+        elif index>60000:
+            wb.save(r"C:\public\目次采全文\0730\osti_"+str(excel_index)+".xls")
+            index=0
+            excel_index+=1
+        else:
+            sheet.write(index,values.index("SOURCENAME"),sourcename)
+            sheet.write(index,values.index("ISSN"),issn)
+            sheet.write(index,values.index("PINJIE"),line.replace("\n","").strip())
+            index+=1
+    wb.save(r"C:\public\目次采全文\0730\osti_" + str(excel_index+1) + ".xls")
+
+
 if __name__ == '__main__':
     # name="dfsf"
     # um = name_manager.url_manager(name)
@@ -147,8 +182,8 @@ if __name__ == '__main__':
     # ex=excels(file_path,um)
     # ex.read()
     # ex.write()
-    write_pages_and_absurl("C:/public/目次采全文/0617/中信所待补全文清单_20190621..xls")
-
+    # write_pages_and_absurl("C:/public/目次采全文/0723/中信所待补全文清单_20190723..xls")
+    create_excel()
 
 
 
