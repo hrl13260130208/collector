@@ -400,7 +400,7 @@ class OSTI(threading.Thread):
             jcb =nm.json_conf_bean(eb.sourcename, eb.eissn)
             file_path = self.creat_filename()
             try:
-                time.sleep(random.random() * 3 + 1)
+                # time.sleep(random.random() * 3 + 1)
                 logger.info(self.sourcename+" 开始下载："+url)
 
                 r = requests.get(url)
@@ -422,7 +422,7 @@ class OSTI(threading.Thread):
                     '__utmt': '1',
                     '__utmb': '249692800.63.10.1564467097'
                 }
-                time.sleep(random.random() * 3 + 1)
+                #time.sleep(random.random() * 3 + 1)
                 logger.info(self.sourcename+" 下载PDF："+pdf_url)
 
                 r2 = requests.get(pdf_url, cookies=cookies)
