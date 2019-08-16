@@ -23,8 +23,9 @@ class EXCEL_ITEM:
 
 logger = logging.getLogger("logger")
 class download_url(threading.Thread):
-    def __init__(self,sourcename,um,tm):
+    def __init__(self,sourcename,um,tm,dir=r"c:/pdfs/"):
         threading.Thread.__init__(self)
+        self.dir=dir
         self.sourcename=sourcename
         self.um=um
         self.tm=tm
@@ -53,7 +54,7 @@ class download_url(threading.Thread):
                 url_dict[EXCEL_ITEM.PINJIE]=eb.pinjie
 
             jcb = nm.json_conf_bean(eb.sourcename, eb.eissn)
-            html_=htmls.HTML(eb,jcb,self.tm,self.sourcename)
+            html_=htmls.HTML(eb,jcb,self.tm,self.sourcename,test_file=self.create_test_file_path())
             try:
                 logger.info("URL_THREAD - " + self.name + " - " + self.sourcename + " get download url form: " + str(url_dict))
                 url,full_url=parser_url(url_dict,html_)
@@ -75,6 +76,8 @@ class download_url(threading.Thread):
             # eb.abs_url = eb.pinjie
             self.um.save(eb,self.step)
         logger.info("URL_THREAD - "+self.name+" - "+self.sourcename + " download_url finsh.")
+    def create_test_file_path(self):
+        return self.dir+self.name+"_"+self.sourcename+".pdf"
 
 def parser_url(url_dict,html_):
     '''
@@ -119,11 +122,16 @@ class download(threading.Thread):
             eb = nm.execl_bean()
             eb.paser(string)
             file_path=self.creat_filename()
-            logger.info("PDF_THREAD - "+self.name+" - "+self.sourcename +" : download pdf.download url:" + eb.full_url +" 下载页面链接："+eb.pinjie )
+
             try:
+                logger.info(
+                    "PDF_THREAD - " + self.name + " - " + self.sourcename + " : download pdf.download url:" + eb.full_url + " 下载页面链接：" + eb.pinjie)
                 htmls.download(eb.full_url,file_path)
+                logger.info(
+                    "PDF_THREAD - " + self.name + " - " + self.sourcename + " :check pdf. pdf path:" + file_path)
+                eb.page = htmls.checkpdf(file_path)
             except Exception :
-                logger.error(self.sourcename +"download " + eb.full_url + " has err",exc_info = True)
+                logger.error(self.sourcename +" download " + eb.full_url + " has err",exc_info = True)
                 if eb.retry <collect.DOWNLOAD_RETRY:
                     logger.info("retry time:" + str(eb.retry) )
                     eb.retry += 1
@@ -134,22 +142,7 @@ class download(threading.Thread):
                     self.um.save(eb,self.err_step)
                 continue
 
-            logger.info("PDF_THREAD - " + self.name + " - " + self.sourcename + " :check pdf.pdf path:" +file_path)
-            try:
-                eb.page=htmls.checkpdf(file_path)
-            except Exception as e:
-                logger.error(self.sourcename + " check pdf ,pdf path: "+file_path+" has err,download url:"+eb.full_url+ " 下载页面链接：" + eb.pinjie,exc_info = True)
-                # os.remove(file_path)
-                # self.um.save_error_pdf_name(file_path)
-                if eb.retry < collect.CHECK_PDF_RETRY:
-                    logger.info("retry time:" + str(eb.retry) )
-                    eb.retry += 1
-                    self.um.save(eb,self.step-1)
-                else:
-                    logger.info("retry:" + str(eb.retry) + ".retry超过指定次数，不再重试。")
-                    eb.err_and_step = str(self.step) + "：pdf不完整，重下超过指定次数"
-                    self.um.save(eb,self.err_step)
-                continue
+
             dirs = file_path.split("/")
             eb.full_path = dirs[-2] + "/" + dirs[-1]
             self.um.save(eb,self.step)

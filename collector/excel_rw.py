@@ -84,14 +84,7 @@ class excels():
                 back_file.write(string+"\n")
                 eb =name_manager.execl_bean()
                 eb.paser(string)
-                print(os.path.exists(collect.first_dir+eb.full_path))
-                if os.path.exists(collect.first_dir+eb.full_path):
-                    self.w_sheet.write(eb.row_num,self.nums[5],eb.full_url)
-                    self.w_sheet.write(eb.row_num,self.nums[6],eb.abs_url)
-
-                    self.w_sheet.write(eb.row_num,self.nums[7],eb.full_path)
-                    self.w_sheet.write(eb.row_num,self.nums[7]+1,eb.page)
-
+                self.excel_write(eb)
         self.wb.save(self.file_path)
         logger.info("Excel写入完成。")
 
@@ -107,8 +100,24 @@ class excels():
 
         logger.info("report文件写入完成。")
 
-    def pandas_read(self):
-        pass
+    def back_file_to_excel(self,back_file_path):
+        back_file = open(back_file_path, "r")
+        for line in back_file.readlines():
+            eb = name_manager.execl_bean()
+            eb.paser(line)
+            self.excel_write(eb)
+        self.wb.save(self.file_path)
+
+    def excel_write(self,eb):
+        print(os.path.exists(collect.first_dir + eb.full_path))
+        if os.path.exists(collect.first_dir + eb.full_path):
+            if len(eb.full_url)>150:
+                eb.full_url=eb.abs_url
+            self.w_sheet.write(eb.row_num, self.nums[5], eb.full_url)
+            self.w_sheet.write(eb.row_num, self.nums[6], eb.abs_url)
+
+            self.w_sheet.write(eb.row_num, self.nums[7], eb.full_path)
+            self.w_sheet.write(eb.row_num, self.nums[7] + 1, eb.page)
 
 
 def write_pages_and_absurl(excel_name):
@@ -148,31 +157,41 @@ def write_pages_and_absurl(excel_name):
 
 
 def create_excel():
-    file=open(r"C:\Users\zhaozhijie.CNPIEC\Documents\Tencent Files\2046391563\FileRecv\lyurl.txt","r")
+    file=open(r"C:\Users\zhaozhijie.CNPIEC\Documents\Tencent Files\2046391563\FileRecv\MobileFile\epa.txt","r")
     values=["SOURCENAME","ISSN","EISSN","WAIBUAID","PINJIE","FULL_URL","ABS_URL","FULL_PATH"]
-    sourcename="osti"
+    dir_=r"C:\public\目次采全文\0806\epa"
+    sourcename="epa"
     issn="o1111"
     index=0
     excel_index=0
     wb=None
     sheet=None
     for line in file.readlines():
+        print(line)
+        url="https://nepis.epa.gov/Exe/ZyPDF.cgi/"+line[-13:-5]+".PDF?Dockey="+line[-13:-5]+".PDF"
+
         if index==0:
             wb=xlwt.Workbook(encoding="utf-8")
             sheet=wb.add_sheet("Sheet1")
             index+=1
             for i,v in enumerate(values):
                 sheet.write(0,i,v)
-        elif index>60000:
-            wb.save(r"C:\public\目次采全文\0730\osti_"+str(excel_index)+".xls")
+        elif index>22000:
+            wb.save(dir_+"_"+str(excel_index)+".xls")
             index=0
             excel_index+=1
         else:
             sheet.write(index,values.index("SOURCENAME"),sourcename)
             sheet.write(index,values.index("ISSN"),issn)
             sheet.write(index,values.index("PINJIE"),line.replace("\n","").strip())
+            sheet.write(index,values.index("FULL_URL"),url)
             index+=1
-    wb.save(r"C:\public\目次采全文\0730\osti_" + str(excel_index+1) + ".xls")
+    wb.save(dir_+"_"+str(excel_index)+".xls")
+
+def back_file_to_excel(back_file_path,excel_path):
+    excels(excel_path,None).back_file_to_excel(back_file_path)
+
+
 
 
 if __name__ == '__main__':
@@ -184,6 +203,7 @@ if __name__ == '__main__':
     # ex.write()
     # write_pages_and_absurl("C:/public/目次采全文/0723/中信所待补全文清单_20190723..xls")
     create_excel()
+    # back_file_to_excel(r"C:\public\目次采全文\0801\osti_0_back.txt",r"C:\public\目次采全文\0801\osti_0.xls")
 
 
 

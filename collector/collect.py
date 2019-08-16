@@ -6,6 +6,11 @@ import os
 import logging
 from concurrent.futures import ThreadPoolExecutor,as_completed
 import requests
+import urllib3
+from urllib3.exceptions import InsecureRequestWarning
+
+#关闭安全请求警告
+urllib3.disable_warnings(InsecureRequestWarning)
 
 
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -123,7 +128,7 @@ def run_thread(name,file_path):
         elif url_set_name=="osti":
             th=threads.OSTI(url_set_name,um,tm,dir)
         else:
-            th = threads.download_url(url_set_name, um, tm)
+            th = threads.download_url(url_set_name, um, tm,dir=first_dir)
         list.append(th)
 
     sns = um.get_sourcenames()
@@ -171,14 +176,14 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    # url_="https://www.osti.gov/biblio/4646168"
-    #
-    # section="common_1"
-    # cp=htmls.config_parser()
-    # cp.get_section(section)
-    # d_url=htmls.HTML(None,None,None,"test").do_run(cp.get_section(section),url_)
-    # d_url="https://www.osti.gov/servlets/purl/4646168"
-    d_url="https://www.osti.gov/biblio/4646168"
+    url_="http://dx.doi.org/10.1515/heem-2016-0013"
+
+    section="Elsevier_1028-4559-1875-6263"
+    cp=htmls.config_parser()
+    cp.get_section(section)
+    d_url=htmls.HTML(None,None,None,"test").do_run(cp.get_section(section),url_)
+    # d_url="https://nepis.epa.gov/Exe/ZyPDF.cgi/9101XEFB.PDF?Dockey=9101XEFB.PDF"
+    # d_url="https://www.osti.gov/biblio/4646168"
     print(d_url)
     htmls.download(d_url.strip(),test_file)
     print(htmls.checkpdf(test_file))
@@ -189,8 +194,8 @@ def test_get_html():
 
 if __name__ == '__main__':
 
-    name = "osti_5"
-    # name = "test"
+    # name = "zx0815"
+    name = "test"
     # name = "yj0329"
     # name = "jx0122"
 
@@ -198,9 +203,9 @@ if __name__ == '__main__':
     # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
 
     # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
-    # file_path = "C:/public/目次采全文/0617/zxc1.xls"
+    file_path = r"C:\temp\test.xls"
 
-    file_path = r"C:\public\目次采全文\0730\osti_5.xls"
+    # file_path = r"C:\public\目次采全文\0815\中信所待补全文清单_20190815..xls"
 
     #check_task(name)
     cp=htmls.config_parser()
