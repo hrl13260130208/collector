@@ -144,6 +144,10 @@ class execl_bean():
             self.sourcename = "IEEE"
         elif "IOP Publish" in self.sourcename:
             self.sourcename="IOP Publish"
+        elif "PMC" in self.sourcename:
+            self.sourcename="PMC"
+        elif "Doaj" in self.sourcename:
+            self.sourcename="Doaj"
 
         self.sourcename.replace("_","")
 

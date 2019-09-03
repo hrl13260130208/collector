@@ -119,43 +119,6 @@ class excels():
             self.w_sheet.write(eb.row_num, self.nums[7], eb.full_path)
             self.w_sheet.write(eb.row_num, self.nums[7] + 1, eb.page)
 
-
-def write_pages_and_absurl(excel_name):
-    rb = xlrd.open_workbook(excel_name)
-    r_sheet = rb.sheet_by_index(0)
-    wb = copy.copy(rb)
-    w_sheet = wb.get_sheet(0)
-    list = r_sheet.row_values(0)
-
-    total_pages_num = list.index("TOTALPAGES")
-    pages_num = list.index("page")
-    absurlnum=list.index("ABS_URL")
-    url_num=list.index("PINJIE")
-    pmc_num=list.index("WAIBUAID")
-    sn_num=list.index("SOURCENAME")
-
-    for row in range(r_sheet.nrows - 1):
-        tp=r_sheet.cell(row+1,total_pages_num)
-        abs_url=r_sheet.cell(row+1,absurlnum).value
-        print("==============",tp.value)
-        if tp.value=="":
-            page=r_sheet.cell(row+1,pages_num)
-            print(page)
-            if page.value!="":
-                w_sheet.write(row+1,total_pages_num,page.value)
-        sn = r_sheet.cell(row + 1, sn_num)
-        print(sn)
-        if abs_url=="":
-            sn=r_sheet.cell(row+1,sn_num)
-            print(sn.value)
-            if sn.value=="PMC":
-                w_sheet.write(row + 1, absurlnum,"https://www.ncbi.nlm.nih.gov/pmc/articles/"+r_sheet.cell(row+1,pmc_num).value)
-            else:
-                w_sheet.write(row + 1, absurlnum, r_sheet.cell(row + 1,url_num).value)
-
-    wb.save(excel_name)
-
-
 def create_excel():
     file=open(r"C:\Users\zhaozhijie.CNPIEC\Documents\Tencent Files\2046391563\FileRecv\MobileFile\epa.txt","r")
     values=["SOURCENAME","ISSN","EISSN","WAIBUAID","PINJIE","FULL_URL","ABS_URL","FULL_PATH"]
@@ -195,14 +158,13 @@ def back_file_to_excel(back_file_path,excel_path):
 
 
 if __name__ == '__main__':
-    # name="dfsf"
+    name="dfsf"
     # um = name_manager.url_manager(name)
     # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/中信所待补全文清单_20181219..xls"
     # ex=excels(file_path,um)
     # ex.read()
     # ex.write()
-    # write_pages_and_absurl("C:/public/目次采全文/0723/中信所待补全文清单_20190723..xls")
-    create_excel()
+    # create_excel()
     # back_file_to_excel(r"C:\public\目次采全文\0801\osti_0_back.txt",r"C:\public\目次采全文\0801\osti_0.xls")
 
 

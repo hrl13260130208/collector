@@ -142,7 +142,7 @@ class download(threading.Thread):
                     self.um.save(eb,self.err_step)
                 continue
 
-
+            logger.info("pdf下载成功。")
             dirs = file_path.split("/")
             eb.full_path = dirs[-2] + "/" + dirs[-1]
             self.um.save(eb,self.step)

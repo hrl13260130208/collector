@@ -162,7 +162,6 @@ def delte_error_pdf(um):
             pass
 
 
-
 def check_task(name):
     um = nm.url_manager(name)
     um.query()
@@ -176,9 +175,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://dx.doi.org/10.1515/heem-2016-0013"
+    url_="http://pubs.rsc.org/en/content/articlelanding/2019/ra/c9ra01295h"
 
-    section="Elsevier_1028-4559-1875-6263"
+    section="common_1"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None,"test").do_run(cp.get_section(section),url_)
@@ -194,26 +193,26 @@ def test_get_html():
 
 if __name__ == '__main__':
 
-    # name = "zx0815"
-    name = "test"
-    # name = "yj0329"
-    # name = "jx0122"
+    # # name = "zx0815"
+    # name = "test"
+    # # name = "yj0329"
+    # # name = "jx0122"
+    #
+    # # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/0329/冶金所待补全文清单_20190329..xls"
+    # # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
+    #
+    # # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
+    # file_path = r"C:\temp\test.xls"
+    #
+    # # file_path = r"C:\public\目次采全文\0815\中信所待补全文清单_20190815..xls"
+    #
+    # #check_task(name)
+    # cp=htmls.config_parser()
+    # cp.paser()
+    # run_thread(name,file_path)
+    # cp.backup()
 
-    # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/0329/冶金所待补全文清单_20190329..xls"
-    # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
-
-    # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
-    file_path = r"C:\temp\test.xls"
-
-    # file_path = r"C:\public\目次采全文\0815\中信所待补全文清单_20190815..xls"
-
-    #check_task(name)
-    cp=htmls.config_parser()
-    cp.paser()
-    run_thread(name,file_path)
-    cp.backup()
-
-    # test_download()
+    test_download()
     # test_get_html()
 
 

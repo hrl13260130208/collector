@@ -438,12 +438,12 @@ def checkpdf(file):
         pdffile.close()
         return num
     except:
-        logger.error("PDF下载出错。", exc_info=True)
+        logger.warning("PDF下载出错。")
         try:
             pdffile.close()
             os.remove(file)
         except:
-            logger.error("PDF删除出错：", exc_info=True)
+            logger.warning("PDF删除出错.")
         raise ValueError("PDF出错！")
 
 #
