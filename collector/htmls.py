@@ -374,6 +374,10 @@ class type_default_parser(common_type_parser):
             return tag["href"]
         elif tag.name == "meta":
             return tag["content"]
+        elif tag.name =="object":
+            return tag["data"]
+        elif tag.name =="form":
+            return tag["action"]
         else:
             return tag.find("a")["href"]
 
@@ -413,6 +417,8 @@ def get_html(url):
     # print(data.cookies)
     data.encoding = 'utf-8'
     datatext = data.text
+    # print(datatext)
+
     data.close()
     return datatext,data.url
 

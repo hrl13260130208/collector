@@ -175,14 +175,14 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://pubs.rsc.org/en/content/articlelanding/2019/ra/c9ra01295h"
+    url_="http://dx.doi.org/10.1016/j.vgie.2019.04.020"
 
-    section="common_1"
+    section="Elsevier_2468-0249"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None,"test").do_run(cp.get_section(section),url_)
     # d_url="https://nepis.epa.gov/Exe/ZyPDF.cgi/9101XEFB.PDF?Dockey=9101XEFB.PDF"
-    # d_url="https://www.osti.gov/biblio/4646168"
+    # d_url="https://www.microbiologyresearch.org/deliver/fulltext/jgv/99/9/1187_vir001128.pdf?itemId=%2Fcontent%2Fjournal%2Fjgv%2F10.1099%2Fjgv.0.001128&amp;mimeType=pdf&amp;containerItemId=content/journal/jgv"
     print(d_url)
     htmls.download(d_url.strip(),test_file)
     print(htmls.checkpdf(test_file))
@@ -193,26 +193,26 @@ def test_get_html():
 
 if __name__ == '__main__':
 
-    # # name = "zx0815"
-    # name = "test"
-    # # name = "yj0329"
-    # # name = "jx0122"
-    #
-    # # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/0329/冶金所待补全文清单_20190329..xls"
-    # # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
-    #
-    # # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
-    # file_path = r"C:\temp\test.xls"
-    #
-    # # file_path = r"C:\public\目次采全文\0815\中信所待补全文清单_20190815..xls"
-    #
-    # #check_task(name)
-    # cp=htmls.config_parser()
-    # cp.paser()
-    # run_thread(name,file_path)
-    # cp.backup()
+    # name = "zx0815"
+    name = "test"
+    # name = "yj0329"
+    # name = "jx0122"
 
-    test_download()
+    # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/0329/冶金所待补全文清单_20190329..xls"
+    # file_path = "F:/hrl/mc/0121/机械所待补全文清单_20190121..xls"
+
+    # file_path = "C:/temp/gruyter2018-2019待采全文的文章清单.xls"
+    file_path = r"C:\temp\test.xls"
+
+    # file_path = r"C:\public\目次采全文\0815\中信所待补全文清单_20190815..xls"
+
+    #check_task(name)
+    cp=htmls.config_parser()
+    cp.paser()
+    run_thread(name,file_path)
+    cp.backup()
+
+    # test_download()
     # test_get_html()
 
 

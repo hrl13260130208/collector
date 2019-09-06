@@ -267,8 +267,8 @@ if __name__ == '__main__':
     #         print(key ," : ",redis_.llen(key)," : ")#, redis_.lrange(key,0,100))
 
     #
-    collect.check_task("zx0723-c1")
-    collect.check_finsh_task("zx0723-c1")
+    collect.check_task("zx0903")
+    collect.check_finsh_task("zx0903")
     # print(redis_.keys("zx0621-c2"))
 
 

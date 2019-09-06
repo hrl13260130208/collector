@@ -57,9 +57,9 @@ class download_url(threading.Thread):
             html_=htmls.HTML(eb,jcb,self.tm,self.sourcename,test_file=self.create_test_file_path())
             try:
                 logger.info("URL_THREAD - " + self.name + " - " + self.sourcename + " get download url form: " + str(url_dict))
-                url,full_url=parser_url(url_dict,html_)
+                url,full_url=parser_url(url_dict,html_,name=self.name + " - " + self.sourcename)
             except :
-                logger.error(self.sourcename +" download url has err！",exc_info = True)
+                logger.error(self.sourcename +" download url has err！url列表："+str(url_dict),exc_info = True)
                 if eb.retry <collect.DOWNLOAD_URL_RETRY:
                     logger.info("retry time:"+str(eb.retry))
                     eb.retry += 1
@@ -79,7 +79,7 @@ class download_url(threading.Thread):
     def create_test_file_path(self):
         return self.dir+self.name+"_"+self.sourcename+".pdf"
 
-def parser_url(url_dict,html_):
+def parser_url(url_dict,html_,name=" "):
     '''
     解析urls
     :param url_dict:
@@ -93,7 +93,7 @@ def parser_url(url_dict,html_):
             else:
                 return url_dict[key],html_.run(url_dict[key])
         except:
-            logger.error(key+" 下载出错，尝试其他url...",exc_info = True)
+            logger.warning(name+" "+key+" 下载出错，尝试其他url...")
 
     raise ValueError("无法解析出PDF的url！")
 
@@ -142,7 +142,7 @@ class download(threading.Thread):
                     self.um.save(eb,self.err_step)
                 continue
 
-            logger.info("pdf下载成功。")
+            logger.info( "PDF_THREAD - " + self.name + " - " + self.sourcename + " :pdf下载成功。")
             dirs = file_path.split("/")
             eb.full_path = dirs[-2] + "/" + dirs[-1]
             self.um.save(eb,self.step)
