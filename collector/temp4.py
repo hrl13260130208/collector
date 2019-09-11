@@ -7,9 +7,9 @@ import collector.htmls as htmls
 # print(redis_.keys("*"))
 
 if __name__ == '__main__':
-    name = "zx0903"
+    name = "zx0909"
 
-    file_path = r"C:\public\目次采全文\0903\中信所待补全文清单_20190903..xls"
+    file_path = r"C:\public\目次采全文\0909\中信所待补全文清单_20190909..xls"
 
     # check_task(name)
     cp = htmls.config_parser()

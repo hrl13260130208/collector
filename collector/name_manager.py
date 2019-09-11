@@ -30,8 +30,6 @@ class conf_bean():
     def default_name(self):
         return self.get_sourcename()+"_default"
 
-
-
 class template_manager():
     '''
     配置的模板最终存储在redis中，此类用于向redis中存储模板
@@ -148,14 +146,14 @@ class execl_bean():
             self.sourcename="PMC"
         elif "Doaj" in self.sourcename:
             self.sourcename="Doaj"
+        elif "Pubmed" in self.sourcename:
+            self.sourcename="Pubmed"
 
         self.sourcename.replace("_","")
-
 
         # print(self.sourcename.find("Sage"))
         # if self.sourcename=="Elsevier":
         #     self.done = True
-
 
     def is_done(self):
         if self.done:
@@ -256,19 +254,19 @@ class url_manager():
 
 
 if __name__ == '__main__':
-    # for key in redis_.keys("*"):
-    #     redis_.delete(key)
-    #     # print(key ,redis_.type(key))
-    #     if redis_.type(key) == "string":
-    #         print(key,redis_.get(key))
-    #     elif redis_.type(key) == "set":
-    #         print(key," : ",redis_.scard(key)," : ",redis_.smembers(key))
-    #     elif redis_.type(key) =="list":
-    #         print(key ," : ",redis_.llen(key)," : ")#, redis_.lrange(key,0,100))
+    for key in redis_.keys("*"):
+        redis_.delete(key)
+        # print(key ,redis_.type(key))
+        if redis_.type(key) == "string":
+            print(key,redis_.get(key))
+        elif redis_.type(key) == "set":
+            print(key," : ",redis_.scard(key)," : ",redis_.smembers(key))
+        elif redis_.type(key) =="list":
+            print(key ," : ",redis_.llen(key)," : ")#, redis_.lrange(key,0,100))
 
     #
-    collect.check_task("zx0903")
-    collect.check_finsh_task("zx0903")
+    # collect.check_task("zx0903")
+    # collect.check_finsh_task("zx0903")
     # print(redis_.keys("zx0621-c2"))
 
 
