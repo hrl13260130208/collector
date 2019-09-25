@@ -208,7 +208,7 @@ def run_file_reader_write(name,write_file_path):
     um = nm.url_manager(name)
     fr = excel_rw.File_Reader(um)
     fr.write(write_file_path)
-    um.clear()
+    um.clear(clear_self=True)
 
 
 
@@ -257,11 +257,11 @@ def test_get_html():
 if __name__ == '__main__':
 
     name="test"
-    file_path=r"C:\temp\other\3.txt"
+    file_path=r"C:\temp\other\1.txt"
     cp = htmls.config_parser()
     cp.paser()
-    # run_file_reader(name, file_path,thread_num=3)
-    run_file_reader_write(name,file_path)
+    run_file_reader(name, file_path,thread_num=3)
+    # run_file_reader_write(name,file_path)
 
     # # name = "zx0815"
     # name = "test"

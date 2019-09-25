@@ -227,7 +227,9 @@ class url_manager():
     def get_done(self,sourcename,step):
         return redis_.get(self.done_name(sourcename,step))
 
-    def clear(self):
+    def clear(self,clear_self=False):
+        if clear_self:
+            redis_.delete(self.name)
         for key in redis_.keys(self.name+"_*"):
             redis_.delete(key)
 
@@ -270,7 +272,7 @@ if __name__ == '__main__':
     #
     collect.check_task("test")
     collect.check_finsh_task("test")
-    # print(redis_.keys("zx0621-c2"))
+    # print(redis_.keys("test"))
 
 
     # collect.check_conf()
