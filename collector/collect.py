@@ -149,6 +149,69 @@ def run_thread(name,file_path):
     um.clear()
 
 
+def run_file_reader(name,file_path,thread_num=1):
+    '''
+    从txt文件中直接读取url，并开始下载
+    采用读写分离的模式,当前方法只负责读取url并下载pdf，结果存储在redis中，要导出结果使用run_file_reader_write方法
+    :param name:
+    :param file_path:
+    :param thread_num:
+    :return:
+    '''
+    list = []
+
+    um = nm.url_manager(name)
+    tm = nm.template_manager()
+    if not um.exist():
+        logger.info("上传数据...")
+        fr=excel_rw.File_Reader(um)
+        fr.read(file_path)
+
+    dir = create_dir(name)
+
+    url_set_names = um.get_sourcenames()
+    for url_set_name in url_set_names:
+        for i in range(thread_num):
+            if url_set_name == "Elsevier":
+                th = threads.Elsevier_download(url_set_name, um, tm, dir)
+            elif url_set_name == "IEEE":
+                th = threads.IEEE_download(url_set_name, um, tm, dir)
+            # elif url_set_name == "Doaj":
+            #     # pass
+            #     th = threads.Single_thread(url_set_name, um, tm, dir)
+            elif url_set_name == "osti":
+                th = threads.OSTI(url_set_name, um, tm, dir)
+            else:
+                th = threads.download_url(url_set_name, um, tm, dir=first_dir)
+
+            list.append(th)
+
+    sns = um.get_sourcenames()
+    for sn in sns:
+        if sn == "Elsevier" or sn == "IEEE" or sn == "osti":
+            continue
+        for i in range(thread_num):
+            th = threads.download(sn, um, dir)
+            list.append(th)
+
+    for t in list:
+        t.start()
+    for t in list:
+        t.join()
+
+
+def run_file_reader_write(name,write_file_path):
+    '''
+
+    :return:
+    '''
+    um = nm.url_manager(name)
+    fr = excel_rw.File_Reader(um)
+    fr.write(write_file_path)
+    um.clear()
+
+
+
 def delte_error_pdf(um):
     logger.info("删除下载错误的pdf...")
     while(True):
@@ -193,6 +256,13 @@ def test_get_html():
 
 if __name__ == '__main__':
 
+    name="test"
+    file_path=r"C:\temp\other\3.txt"
+    cp = htmls.config_parser()
+    cp.paser()
+    # run_file_reader(name, file_path,thread_num=3)
+    run_file_reader_write(name,file_path)
+
     # # name = "zx0815"
     # name = "test"
     # # name = "yj0329"
@@ -212,8 +282,11 @@ if __name__ == '__main__':
     # run_thread(name,file_path)
     # cp.backup()
 
-    test_download()
+    # test_download()
     # test_get_html()
+
+    # um = nm.url_manager("abf")
+    # print(um.exist())
 
 
 

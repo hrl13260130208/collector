@@ -119,19 +119,58 @@ class excels():
             self.w_sheet.write(eb.row_num, self.nums[7], eb.full_path)
             self.w_sheet.write(eb.row_num, self.nums[7] + 1, eb.page)
 
+
+
+class File_Reader():
+    def __init__(self,um):
+        self.um=um
+        self.step = 0
+        self.write_step = 2
+
+    def read(self,file_path,sourcename="doaj",issn="d"):
+        logger.info("设定sourcename为："+sourcename+",开始读取文件...")
+        self.um.save_sourcenames(sourcename)
+        with open(file_path,"r",encoding="utf-8") as f:
+            for line_index,line in enumerate(f.readlines()):
+                eb = name_manager.execl_bean()
+                eb.sourcename=sourcename
+                eb.eissn=issn+str(line_index)
+                eb.pinjie=line.replace("\n","").strip()
+                eb.row_num=-1
+
+                self.um.save(eb, self.step)
+
+    def write(self,file_path):
+        write_file=open(file_path,"w+",encoding="utf-8")
+        back_file = open(file_path.replace(".txt", "_back.txt"), "w+",encoding="utf-8")
+        logger.info("写入文件...")
+        for sn in self.um.get_sourcenames():
+            while (True):
+                url_name = self.um.fix(sn, self.write_step)
+                string = self.um.get_eb(url_name)
+                if string == None:
+                    break
+                back_file.write(string + "\n")
+                eb = name_manager.execl_bean()
+                eb.paser(string)
+                write_file.write(eb.pinjie+"##"+eb.full_url+"##"+eb.full_path+"\n")
+
+
+
+
 def create_excel():
-    file=open(r"C:\Users\zhaozhijie.CNPIEC\Documents\Tencent Files\2046391563\FileRecv\MobileFile\epa.txt","r")
+    file=open(r"C:\Users\zhaozhijie.CNPIEC\Documents\Tencent Files\2046391563\FileRecv\doajurl.txt","r",encoding="utf-8")
     values=["SOURCENAME","ISSN","EISSN","WAIBUAID","PINJIE","FULL_URL","ABS_URL","FULL_PATH"]
-    dir_=r"C:\public\目次采全文\0806\epa"
-    sourcename="epa"
-    issn="o1111"
+    dir_=r"C:\public\目次采全文\0924\doaj"
+    sourcename="doaj"
+    issn="d"
     index=0
     excel_index=0
     wb=None
     sheet=None
-    for line in file.readlines():
-        print(line)
-        url="https://nepis.epa.gov/Exe/ZyPDF.cgi/"+line[-13:-5]+".PDF?Dockey="+line[-13:-5]+".PDF"
+    for line_index,line in enumerate(file.readlines()):
+        # print(line)
+        # url="https://nepis.epa.gov/Exe/ZyPDF.cgi/"+line[-13:-5]+".PDF?Dockey="+line[-13:-5]+".PDF"
 
         if index==0:
             wb=xlwt.Workbook(encoding="utf-8")
@@ -139,15 +178,15 @@ def create_excel():
             index+=1
             for i,v in enumerate(values):
                 sheet.write(0,i,v)
-        elif index>22000:
+        elif index>60000:
             wb.save(dir_+"_"+str(excel_index)+".xls")
             index=0
             excel_index+=1
         else:
             sheet.write(index,values.index("SOURCENAME"),sourcename)
-            sheet.write(index,values.index("ISSN"),issn)
+            sheet.write(index,values.index("ISSN"),issn+str(line_index))
             sheet.write(index,values.index("PINJIE"),line.replace("\n","").strip())
-            sheet.write(index,values.index("FULL_URL"),url)
+            # sheet.write(index,values.index("FULL_URL"),line.strip())
             index+=1
     wb.save(dir_+"_"+str(excel_index)+".xls")
 
@@ -158,7 +197,8 @@ def back_file_to_excel(back_file_path,excel_path):
 
 
 if __name__ == '__main__':
-    name="dfsf"
+    create_excel()
+    # name="dfsf"
     # um = name_manager.url_manager(name)
     # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/中信所待补全文清单_20181219..xls"
     # ex=excels(file_path,um)

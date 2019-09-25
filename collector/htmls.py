@@ -30,14 +30,14 @@ class config_parser():
         else:
             self.file_name = "conf.cfg"
 
-    def test(self,section,url,*config):
-        logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        if config:
-            self.conf.read(config)
-        else:
-            self.conf.read(self.file_name)
-        conf_test=self.conf.items(section)
-        return  HTML(None,None,None).test(conf_test,url)
+    # def test(self,section,url,*config):
+    #     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    #     if config:
+    #         self.conf.read(config)
+    #     else:
+    #         self.conf.read(self.file_name)
+    #     conf_test=self.conf.items(section)
+    #     return  HTML(None,None,None).test(conf_test,url)
 
     def get_section(self,section):
         self.conf.read(self.file_name,encoding="utf-8")
