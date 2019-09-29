@@ -132,10 +132,14 @@ class File_Reader():
         self.um.save_sourcenames(sourcename)
         with open(file_path,"r",encoding="utf-8") as f:
             for line_index,line in enumerate(f.readlines()):
+                print(line_index)
+                line=line.replace("\n","").strip()
+                if line=="":
+                    continue
                 eb = name_manager.execl_bean()
                 eb.sourcename=sourcename
                 eb.eissn=issn+str(line_index)
-                eb.pinjie=line.replace("\n","").strip()
+                eb.pinjie=line
                 eb.row_num=-1
 
                 self.um.save(eb, self.step)

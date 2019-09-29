@@ -201,7 +201,7 @@ class Elsevier_download(threading.Thread):
                 logger.info(self.sourcename +"-"+eb.eissn + " 无可用的conf.")
                 continue
             except Exception as e:
-                logger.error(self.sourcename + " download url " + url + " has err", exc_info=True)
+                logger.error(self.sourcename + " download url " + str(url_dict) + " has err", exc_info=True)
                 if eb.retry < collect.DOWNLOAD_URL_RETRY:
                     logger.info("retry time:" + str(eb.retry))
                     eb.retry += 1

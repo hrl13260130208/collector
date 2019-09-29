@@ -19,16 +19,17 @@ logger=logging.getLogger("logger")
 UPDATE="update"
 
 #文件路径配置
-# REPORT_PATH="F:/pdfs/report.txt"
-# back_file="F:/pdfs/backup"
-# first_dir = "F:/pdfs/"
+# REPORT_PATH="/data/pdf/backup/doaj/report.txt"
+# back_file="/data/pdf/backup/doaj/backup"
+# first_dir = "/data/pdf/backup/doaj/"
+# test_file="/data/pdf/backup/doaj/sdf.pdf"
 
 REPORT_PATH="C:/pdfs/report.txt"
 first_dir = "C:/pdfs/"
 back_file="C:/pdfs/backup"
 
 test_file="C:/File/sdf.pdf"
-#test_file="C:/File/sdf.pdf"
+
 
 #重试次数
 DOWNLOAD_URL_RETRY=5
@@ -149,7 +150,7 @@ def run_thread(name,file_path):
     um.clear()
 
 
-def run_file_reader(name,file_path,thread_num=1):
+def run_file_reader(name,file_path,url_thread_num=1,pdf_thread_num=1):
     '''
     从txt文件中直接读取url，并开始下载
     采用读写分离的模式,当前方法只负责读取url并下载pdf，结果存储在redis中，要导出结果使用run_file_reader_write方法
@@ -171,7 +172,7 @@ def run_file_reader(name,file_path,thread_num=1):
 
     url_set_names = um.get_sourcenames()
     for url_set_name in url_set_names:
-        for i in range(thread_num):
+        for i in range(url_thread_num):
             if url_set_name == "Elsevier":
                 th = threads.Elsevier_download(url_set_name, um, tm, dir)
             elif url_set_name == "IEEE":
@@ -190,7 +191,7 @@ def run_file_reader(name,file_path,thread_num=1):
     for sn in sns:
         if sn == "Elsevier" or sn == "IEEE" or sn == "osti":
             continue
-        for i in range(thread_num):
+        for i in range(pdf_thread_num):
             th = threads.download(sn, um, dir)
             list.append(th)
 
@@ -238,9 +239,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://dx.doi.org/10.1099/mic.0.000699"
+    url_="http://dx.doi.org/10.1016/j.procir.2019.04.181"
 
-    section="Pubmed_1465-2080"
+    section="Elsevier_2212-8271-2212-8271"
     cp=htmls.config_parser()
     cp.get_section(section)
     d_url=htmls.HTML(None,None,None,"test").do_run(cp.get_section(section),url_)
@@ -256,12 +257,12 @@ def test_get_html():
 
 if __name__ == '__main__':
 
-    name="test"
-    file_path=r"C:\temp\other\1.txt"
-    cp = htmls.config_parser()
-    cp.paser()
-    run_file_reader(name, file_path,thread_num=3)
-    # run_file_reader_write(name,file_path)
+    # name="doaj0925"
+    # file_path=r"C:\public\目次采全文\0925\doajurl.txt"
+    # # cp = htmls.config_parser()
+    # # cp.paser()
+    # run_file_reader(name, file_path,url_thread_num=30,pdf_thread_num=1)
+    # # run_file_reader_write(name,file_path)
 
     # # name = "zx0815"
     # name = "test"
@@ -282,7 +283,7 @@ if __name__ == '__main__':
     # run_thread(name,file_path)
     # cp.backup()
 
-    # test_download()
+    test_download()
     # test_get_html()
 
     # um = nm.url_manager("abf")
