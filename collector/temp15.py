@@ -7,15 +7,15 @@ import collector.htmls as htmls
 # print(redis_.keys("*"))
 
 if __name__ == '__main__':
-    # name = "yj0927"
-    #
-    #
-    # file_path = r"C:\public\目次采全文\0927\冶金所待补全文清单_20190926..xls"
+    name = "osti_2"
+    # name = "hg0903"
 
-    name = "osti_12"
 
-    file_path = r"C:\public\目次采全文\0730\osti_12.xls"
-    # check_task(name)
+    file_path = r"C:\public\目次采全文\0730\osti_2.xls"
+    # file_path = r"C:\public\目次采全文\0903\化工所待补全文清单_20190903..xls"
+
+
+
     cp = htmls.config_parser()
     cp.paser()
     collect.run_thread(name, file_path)

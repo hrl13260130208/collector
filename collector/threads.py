@@ -397,34 +397,96 @@ class OSTI(threading.Thread):
                 logger.info(self.sourcename+" 开始下载："+url)
 
                 r = requests.get(url)
-                c1 = r.cookies['BIGipServerlbapp_tc3']
-                c2 = r.cookies['BIGipServerwww.osti.gov_pool']
-                c3 = r.cookies['JSESSIONID']
+                try:
+                    c1 = r.cookies['BIGipServerlbapp_tc3']
+                    c2 = r.cookies['BIGipServerwww.osti.gov_pool']
+                    c3 = r.cookies['JSESSIONID']
+                except:
+                    pass
                 soup = BeautifulSoup(r.text, "html.parser")
 
-                pdf_url = soup.find("meta", {"name": "citation_pdf_url"})["content"]
-                cookies = {
-                    'BIGipServerlbapp_tc3': c1,
-                    'BIGipServerwww.osti.gov_pool': c2,
-                    'JSESSIONID': c3,
-                    '__utma': '249692800.1749221367.1564467097.1564467097.1564467097.1',
-                    '__utmc': '249692800',
-                    '__utmz': '249692800.1564467097.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)',
-                    '_ga': 'GA1.2.1749221367.1564467097',
-                    '_gid': 'GA1.2.298248318.1564467099',
-                    '__utmt': '1',
-                    '__utmb': '249692800.63.10.1564467097'
-                }
-                #time.sleep(random.random() * 3 + 1)
-                logger.info(self.sourcename+" 下载PDF："+pdf_url)
+                mate = soup.find("meta", {"name": "citation_pdf_url"})
+                if mate == None:
+                    start_break = False
+                    for div1 in soup.find_all("div", class_="biblio-secondary-group"):
+                        for div2 in div1.find_all("div", class_="biblio-secondary-item small"):
+                            for a in div2.find_all("a"):
+                                if "href" in a.attrs.keys():
+                                    if "https://doi.org" in a["href"]:
+                                        pdf_url = a["href"]
+                                        cp = htmls.config_parser()
+                                        ht = htmls.HTML(None, None, None, None)
+                                        for conf in cp.get_all_conf():
+                                            print(conf)
+                                            if ht.test(conf, pdf_url):
+                                                result = ht.do_run(conf, pdf_url)
+                                                r2 = requests.get(result)
+                                                r2.encoding = 'utf-8'
+                                                # print(r2.text)
+                                                file = open(file_path, "wb+")
+                                                file.write(r2.content)
+                                                file.close()
+                                                break
 
-                r2 = requests.get(pdf_url, cookies=cookies)
-                r2.encoding = 'utf-8'
-                file = open(file_path, "wb+")
-                file.write(r2.content)
-                file.close()
+                                        start_break = True
+                                        break
+                            if start_break:
+                                break
+                        if start_break:
+                            break
+
+                else:
+                    pdf_url = mate["content"]
+                    cookies = {
+                        'BIGipServerlbapp_tc3': c1,
+                        'BIGipServerwww.osti.gov_pool': c2,
+                        'JSESSIONID': c3,
+                        '__utma': '249692800.1749221367.1564467097.1564467097.1564467097.1',
+                        '__utmc': '249692800',
+                        '__utmz': '249692800.1564467097.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)',
+                        '_ga': 'GA1.2.1749221367.1564467097',
+                        '_gid': 'GA1.2.298248318.1564467099',
+                        '__utmt': '1',
+                        '__utmb': '249692800.63.10.1564467097'
+                    }
+
+                    r2 = requests.get(pdf_url, cookies=cookies)
+                    r2.encoding = 'utf-8'
+                    # print(r2.text)
+                    file = open(file_path, "wb+")
+                    file.write(r2.content)
+                    file.close()
                 eb.page = htmls.checkpdf(file_path)
                 full_url=pdf_url
+                # r = requests.get(url)
+                # c1 = r.cookies['BIGipServerlbapp_tc3']
+                # c2 = r.cookies['BIGipServerwww.osti.gov_pool']
+                # c3 = r.cookies['JSESSIONID']
+                # soup = BeautifulSoup(r.text, "html.parser")
+                #
+                # pdf_url = soup.find("meta", {"name": "citation_pdf_url"})["content"]
+                # cookies = {
+                #     'BIGipServerlbapp_tc3': c1,
+                #     'BIGipServerwww.osti.gov_pool': c2,
+                #     'JSESSIONID': c3,
+                #     '__utma': '249692800.1749221367.1564467097.1564467097.1564467097.1',
+                #     '__utmc': '249692800',
+                #     '__utmz': '249692800.1564467097.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)',
+                #     '_ga': 'GA1.2.1749221367.1564467097',
+                #     '_gid': 'GA1.2.298248318.1564467099',
+                #     '__utmt': '1',
+                #     '__utmb': '249692800.63.10.1564467097'
+                # }
+                # #time.sleep(random.random() * 3 + 1)
+                # logger.info(self.sourcename+" 下载PDF："+pdf_url)
+                #
+                # r2 = requests.get(pdf_url, cookies=cookies)
+                # r2.encoding = 'utf-8'
+                # file = open(file_path, "wb+")
+                # file.write(r2.content)
+                # file.close()
+                # eb.page = htmls.checkpdf(file_path)
+                # full_url=pdf_url
 
             except NoConfError:
                 logger.info(eb.eissn + " 无可用的conf.")

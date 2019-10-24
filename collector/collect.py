@@ -239,11 +239,11 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://dx.doi.org/10.1016/j.procir.2019.04.181"
+    url_="https://doi.org/10.1088/1367-2630/aa6b8a"
 
-    section="Elsevier_2212-8271-2212-8271"
+    section="common_2"
     cp=htmls.config_parser()
-    cp.get_section(section)
+    print(cp.get_section(section))
     d_url=htmls.HTML(None,None,None,"test").do_run(cp.get_section(section),url_)
     # d_url="https://nepis.epa.gov/Exe/ZyPDF.cgi/9101XEFB.PDF?Dockey=9101XEFB.PDF"
     # d_url="https://www.microbiologyresearch.org/deliver/fulltext/jgv/99/9/1187_vir001128.pdf?itemId=%2Fcontent%2Fjournal%2Fjgv%2F10.1099%2Fjgv.0.001128&amp;mimeType=pdf&amp;containerItemId=content/journal/jgv"

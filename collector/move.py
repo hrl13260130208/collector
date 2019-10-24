@@ -2,7 +2,7 @@ import os
 import shutil
 
 def move():
-    copy_path = r"G:/20190802yj/"
+    copy_path = "C:/temp/a/"
 
     write_file = open(r"C:\pdfs\list.txt")
     if not os.path.exists(copy_path):

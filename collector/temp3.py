@@ -7,11 +7,11 @@ import collector.htmls as htmls
 # print(redis_.keys("*"))
 
 if __name__ == '__main__':
-    # name = "osti_11"
-    name = "jx0927"
+    name = "osti_11"
+    # name = "jx0927"
 
-    # file_path = r"C:\public\目次采全文\0730\osti_11.xls"
-    file_path = r"C:\public\目次采全文\0927\机械所待补全文清单_20190926..xls"
+    file_path = r"C:\public\目次采全文\0730\osti_11.xls"
+    # file_path = r"C:\public\目次采全文\0927\机械所待补全文清单_20190926..xls"
 
     # check_task(name)
     cp = htmls.config_parser()
