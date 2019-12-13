@@ -255,12 +255,14 @@ class url_manager():
     def query_finsh_url(self):
         for sn in self.get_sourcenames():
             print("sourname : " + sn,"已完成数量："+str(redis_.llen(self.fix(sn,2))))
+            print("sourname : " + sn,"错误数量："+str(redis_.llen(self.fix(sn,3))))
+
 
 
 
 if __name__ == '__main__':
-    # for key in redis_.keys("*"):
-    #     redis_.delete(key)
+    # for key in redis_.keys("web_*"):
+    #     # redis_.delete(key)
     #     # print(key ,redis_.type(key))
     #     if redis_.type(key) == "string":
     #         print(key,redis_.get(key))
@@ -268,10 +270,10 @@ if __name__ == '__main__':
     #         print(key," : ",redis_.scard(key)," : ",redis_.smembers(key))
     #     elif redis_.type(key) =="list":
     #         print(key ," : ",redis_.llen(key)," : ")#, redis_.lrange(key,0,100))
-
+    # redis_.delete("web_err")
     #
-    collect.check_task("zx0927")
-    collect.check_finsh_task("zx0927")
+    collect.check_task("yj1209")
+    collect.check_finsh_task("yj1209")
     # print(redis_.keys("test"))
 
 

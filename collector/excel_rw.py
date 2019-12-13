@@ -10,6 +10,7 @@ import xlwt
 
 
 
+
 logger = logging.getLogger("logger")
 class excels():
     def __init__(self,file_path,um):
@@ -40,37 +41,62 @@ class excels():
     def read(self):
         logger.info("读取execl...")
 
-        self.create()
-
-        for row in range(self.r_sheet.nrows-1):
-            eb=name_manager.execl_bean()
-            eb.row_num=row+1
-            eb.sourcename=self.r_sheet.cell(eb.row_num,self.nums[0]).value
-            issn=self.r_sheet.cell(eb.row_num,self.nums[1]).value
-            eissn=self.r_sheet.cell(eb.row_num,self.nums[2]).value
-            if issn =="":
-                eb.eissn=eissn
-            elif(eissn == ""):
-                eb.eissn=issn
-            else:
-                eb.eissn=issn+"-"+eissn
-            eb.waibuaid=self.r_sheet.cell(eb.row_num,self.nums[3]).value
-            eb.pinjie=self.r_sheet.cell(eb.row_num,self.nums[4]).value
-            eb.full_url=self.r_sheet.cell(eb.row_num,self.nums[5]).value
-            eb.abs_url=self.r_sheet.cell(eb.row_num,self.nums[6]).value
-            eb.full_path=self.r_sheet.cell(eb.row_num,self.nums[7]).value
-            if self.list.__len__()> self.nums[7]+1:
-                page_num=self.r_sheet.cell(eb.row_num,self.nums[7]+1).value
-                if page_num:
-                    eb.page=int(page_num)
-
-            eb.check()
-
+        for eb in self.read_items():
             if not eb.is_done():
                 logger.info(eb.to_string())
                 self.um.save_sourcenames(eb.sourcename)
                 self.um.save(eb,self.step)
         logger.info("execl读取完成。")
+
+    def read_items(self):
+        self.create()
+        eb_list=[]
+        for row in range(self.r_sheet.nrows - 1):
+            eb = name_manager.execl_bean()
+            eb.row_num = row + 1
+            eb.sourcename = self.r_sheet.cell(eb.row_num, self.nums[0]).value
+            issn = self.r_sheet.cell(eb.row_num, self.nums[1]).value
+            eissn = self.r_sheet.cell(eb.row_num, self.nums[2]).value
+            if issn == "":
+                eb.eissn = eissn
+            elif (eissn == ""):
+                eb.eissn = issn
+            else:
+                eb.eissn = issn + "-" + eissn
+            eb.waibuaid = self.r_sheet.cell(eb.row_num, self.nums[3]).value
+            eb.pinjie = self.r_sheet.cell(eb.row_num, self.nums[4]).value
+            eb.full_url = self.r_sheet.cell(eb.row_num, self.nums[5]).value
+            eb.abs_url = self.r_sheet.cell(eb.row_num, self.nums[6]).value
+            eb.full_path = self.r_sheet.cell(eb.row_num, self.nums[7]).value
+            if self.list.__len__() > self.nums[7] + 1:
+                page_num = self.r_sheet.cell(eb.row_num, self.nums[7] + 1).value
+                if page_num:
+                    eb.page = int(page_num)
+
+            eb.check()
+            eb_list.append(eb)
+        return eb_list
+
+    def read_to_txt(self,txt_path=r"C:\temp\新建文件夹\all.txt"):
+        file=open(txt_path,"a+",encoding="utf-8")
+
+        self.create()
+
+        for row in range(self.r_sheet.nrows - 1):
+            pinjie = self.r_sheet.cell(row+1, self.nums[4]).value
+            full_url = self.r_sheet.cell(row+1, self.nums[5]).value
+            abs_url = self.r_sheet.cell(row+1, self.nums[6]).value
+            full_path = self.r_sheet.cell(row+1, self.nums[7]).value
+            print(full_path,full_path=="")
+            if full_path=="":
+                file.write(pinjie+"\n")
+            else:
+                file.write(pinjie+"##"+full_url+"##"+abs_url+"##"+full_path+"\n")
+
+        file.close()
+
+
+
 
     def write(self):
         back_file=open(self.file_path.replace(".xls","_back.txt"),"w+")
@@ -199,9 +225,74 @@ def back_file_to_excel(back_file_path,excel_path):
 
 
 
+def test():
+    for name in os.listdir(r"C:\temp\新建文件夹"):
+        if ".xls" in name:
+            excels(os.path.join(r"C:\temp\新建文件夹",name),None).read_to_txt()
+
+
+def test2():
+    file1=r"C:\temp\新建文件夹\all.txt"
+    file2=r"C:\temp\新建文件夹\done.txt"
+    file3=r"C:\temp\新建文件夹\todo.txt"
+    f2=open(file2,"a+",encoding="utf-8")
+    f3=open(file3,"a+",encoding="utf-8")
+    with open(file1,"r",encoding="utf-8") as f:
+        for line in f.readlines():
+            items=line.split("##")
+            if items.__len__()==4:
+                f2.write(line)
+            else:
+                f3.write(line)
+
+def write_pages_and_absurl(excel_name):
+    rb = xlrd.open_workbook(excel_name)
+    r_sheet = rb.sheet_by_index(0)
+    wb = copy.copy(rb)
+    w_sheet = wb.get_sheet(0)
+    list = r_sheet.row_values(0)
+
+    total_pages_num = list.index("TOTALPAGES")
+    pages_num = list.index("page")
+    absurlnum=list.index("ABS_URL")
+    url_num=list.index("PINJIE")
+    pmc_num=list.index("WAIBUAID")
+    sn_num=list.index("SOURCENAME")
+
+    for row in range(r_sheet.nrows - 1):
+        tp=r_sheet.cell(row+1,total_pages_num)
+        abs_url=r_sheet.cell(row+1,absurlnum).value
+        print("==============",tp.value)
+        if tp.value=="":
+            page=r_sheet.cell(row+1,pages_num)
+            print(page)
+            if page.value!="":
+                w_sheet.write(row+1,total_pages_num,page.value)
+        sn = r_sheet.cell(row + 1, sn_num)
+        print(sn)
+        if abs_url=="":
+            sn=r_sheet.cell(row+1,sn_num)
+            print(sn.value)
+            if  "PMC" in sn.value:
+                w_sheet.write(row + 1, absurlnum,"https://www.ncbi.nlm.nih.gov/pmc/articles/"+r_sheet.cell(row+1,pmc_num).value)
+            else:
+                w_sheet.write(row + 1, absurlnum, r_sheet.cell(row + 1,url_num).value)
+        else:
+            if "PMC" in sn.value:
+                if "dx.doi.org" in abs_url:
+                    w_sheet.write(row + 1, absurlnum,
+                                  "https://www.ncbi.nlm.nih.gov/pmc/articles/" + r_sheet.cell(row + 1, pmc_num).value)
+
+
+
+    wb.save(excel_name)
 
 if __name__ == '__main__':
-    create_excel()
+    # create_excel()
+    write_pages_and_absurl(r"C:\public\目次采全文\1209\冶金所待补全文清单_20191209..xls")
+
+    # test()
+    # test2()
     # name="dfsf"
     # um = name_manager.url_manager(name)
     # file_path = "C:/Users/zhaozhijie.CNPIEC/Desktop/temp/中信所待补全文清单_20181219..xls"

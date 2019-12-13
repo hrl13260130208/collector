@@ -1,10 +1,15 @@
 #!/usr/bin/python
 #-*- coding: utf-8 -*-
+from selenium import webdriver  # 启动浏览器需要用到
+from selenium.webdriver.common.keys import Keys  # 提供键盘按键支持（最后一个K要大写）
+
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import requests
 from bs4 import BeautifulSoup
 import os
 import PyPDF2
 from collector import htmls
+import time
 
 def create_arff(file_path,attrs,name):
     arff_file=open("C:/temp/"+name+".arff","w+")
@@ -114,12 +119,57 @@ def test(url,file_path=r"C:\temp\other\test.pdf"):
     print(page)
 
 
+def drivertest():
+    driver_path=r"C:\File\tools\webdriver\chromedriver.exe"
+
+    driver = webdriver.Chrome(driver_path)
+    driver.get("http://chinageology.cgs.cn/article/doi/10.31035/cg2018081?pageType=en")
+    a=driver.find_element_by_link_text("PDF")
+    a.click()
+    time.sleep(1)
+    print(driver.window_handles)
+    driver.switch_to.window(driver.window_handles[1])
+    print(driver.current_url)
+
+    # pdfurl=a.get_attribute("href")
+    # print(pdfurl)
+    # driver.implicitly_wait(60)
+    # driver.get(pdfurl)
+    # time.sleep(20)
+    # # print(requests.get(pdfurl).text)
+    # # print(driver.page_source)
+    # for i in driver.find_elements_by_tag_name("iframe"):
+    #     print(i)
+    #     try:
+    #         driver.switch_to_frame(i)
+    #         pdf=driver.find_element_by_class_name("download")
+    #         pa=pdf.click()
+    #     except:
+    #         pass
+    # for e in driver.get_log("performance"):
+    #     print("-----------",e)
+    # # p2=pa.find_element_by_link_text("PDF")
+    # p2.click()
+
+    time.sleep(10)
+    driver.close()  # 关闭浏览器一个Tab
+
 
 
 if __name__ == '__main__':
-    test("https://www.osti.gov/biblio/1457174")
+    # test("https://www.osti.gov/biblio/1457174")
+    drivertest()
 
 
+    # with open(r'C:\temp\test.txt', 'r', encoding='utf-8') as f:  # 二进制写入
+    #     afflis = []
+    #     namelis = []
+    #     for ss in f.read().split('\n'):
+    #         afflis.append(ss.split('–')[1])
+    #         namelis.append(ss.split('–')[0])
+    #
+    #     print('##'.join(namelis))
+    #     print('##'.join(afflis))
     # path = "C:/temp/part-r-2017"
     # attrs = {}
     # for line in open(path).readlines():

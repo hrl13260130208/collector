@@ -239,13 +239,13 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="https://doi.org/10.1088/1367-2630/aa6b8a"
+    url_="http://dx.doi.org/10.31035/cg2018054"
 
     section="common_2"
     cp=htmls.config_parser()
     print(cp.get_section(section))
     d_url=htmls.HTML(None,None,None,"test").do_run(cp.get_section(section),url_)
-    # d_url="https://nepis.epa.gov/Exe/ZyPDF.cgi/9101XEFB.PDF?Dockey=9101XEFB.PDF"
+    # d_url="https://onlinelibrary.wiley.com/doi/epdf/10.1016/S1607-551X%2814%2900235-6"
     # d_url="https://www.microbiologyresearch.org/deliver/fulltext/jgv/99/9/1187_vir001128.pdf?itemId=%2Fcontent%2Fjournal%2Fjgv%2F10.1099%2Fjgv.0.001128&amp;mimeType=pdf&amp;containerItemId=content/journal/jgv"
     print(d_url)
     htmls.download(d_url.strip(),test_file)
@@ -279,7 +279,9 @@ if __name__ == '__main__':
     #
     # #check_task(name)
     # cp=htmls.config_parser()
-    # cp.paser()
+    # for i in cp.get_all_conf():
+    #     print(type(i),i)
+    #     break
     # run_thread(name,file_path)
     # cp.backup()
 

@@ -15,6 +15,7 @@ import re
 import os
 
 
+
 fake = faker.Factory.create()
 PROXY_POOL_URL= 'http://localhost:5555/random'
 
@@ -156,15 +157,28 @@ class HTML():
 
     def do_run(self,conf,url):
         conf.sort()
+        replace_1=""
+        replace_2=""
+        r_url=None
+        for li in conf:
+            if li[0] =="url_replace":
+                rs=li[1].split(",")
+                replace_1=rs[0]
+                replace_2=rs[1]
+                conf.remove(li)
+
         for li in conf:
             if li[0]=="type":
                 if li[1]=="1":
                     conf.remove(li)
-                    return self.type_1(conf,url)
+                    r_url= self.type_1(conf,url)
                 elif li[1]=="2":
                     conf.remove(li)
-                    return self.type_2(conf, url)
-        return self.type_default(conf,url)
+                    r_url= self.type_2(conf, url)
+        if r_url==None:
+            r_url= self.type_default(conf,url)
+
+        return r_url.replace(replace_1,replace_2)
 
     def type_1(self,conf,url):
         return type_1_parser(conf,url).run()

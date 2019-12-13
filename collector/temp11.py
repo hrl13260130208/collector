@@ -7,11 +7,13 @@ import collector.htmls as htmls
 # print(redis_.keys("*"))
 
 if __name__ == '__main__':
-    name = "osti_6"
+    # name = "osti_6"
+    name = "osti_iop"
+
     # name = "hg0903"
 
 
-    file_path = r"C:\public\目次采全文\0730\osti_6.xls"
+    file_path = r"C:\temp\osti\r1119\web_xls\iop.xls"
     # file_path = r"C:\public\目次采全文\0903\化工所待补全文清单_20190903..xls"
 
 
