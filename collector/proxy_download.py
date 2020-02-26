@@ -32,7 +32,7 @@ def drivertest(dir=r"C:\pdfs\osti_weliy"):
                 url=line.replace("\n","")
                 # url="https://onlinelibrary.wiley.com/resolve/doi?DOI=10.1111/gcbb.12366"
                 proxy.new_har("douyin", options={'captureHeaders': True, 'captureContent': True})
-
+                print(time.time(),url)
                 driver.get(url)
                 a = driver.find_element_by_link_text("PDF")
                 pdfurl=a.get_attribute("href")
@@ -56,7 +56,7 @@ def drivertest(dir=r"C:\pdfs\osti_weliy"):
                 for entry in result['log']['entries']:
                     _url = entry['request']['url']
                     if "https://dyz6l42c0kkca.cloudfront.net/" in _url:
-                        print(_url)
+                        # print(_url)
                         try:
                             file=creat_filename(dir)
                             download(_url,file)
@@ -117,16 +117,16 @@ def elsevierdownload(dir="",read_path=r"C:\temp\wiley.txt",write_path=r"C:\temp\
         for line in f.readlines():
             try:
                 url=line.replace("\n","")
-                print(url)
+                print(time.time(),url)
                 driver.switch_to.window(driver.window_handles[0])
                 driver.get(url)
                 a = driver.find_element_by_link_text("PDF")
                 a.click()
                 time.sleep(1)
-                print(driver.window_handles)
+                # print(driver.window_handles)
                 driver.switch_to.window(driver.window_handles[1])
                 _url=driver.current_url
-                print(_url)
+                # print(_url)
                 driver.close()
                 try:
                     file = creat_filename(dir)

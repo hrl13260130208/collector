@@ -7,8 +7,8 @@ import collector.htmls as htmls
 # print(redis_.keys("*"))
 
 if __name__ == '__main__':
-    name = "zx1108"
-    file_path = r"C:\public\目次采全文\1108\中信所待补全文清单_20191106..xls"
+    name = "zx0108"
+    file_path = r"C:\public\目次采全文\0108\中信所待补全文清单_20200108..xls"
 
     # name = "osti_12"
     #

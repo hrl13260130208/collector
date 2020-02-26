@@ -272,8 +272,8 @@ if __name__ == '__main__':
     #         print(key ," : ",redis_.llen(key)," : ")#, redis_.lrange(key,0,100))
     # redis_.delete("web_err")
     #
-    collect.check_task("yj1209")
-    collect.check_finsh_task("yj1209")
+    collect.check_task("zx0108")
+    collect.check_finsh_task("zx0108")
     # print(redis_.keys("test"))
 
 

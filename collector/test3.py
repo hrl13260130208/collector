@@ -56,8 +56,10 @@ def test2():
 
 
 if __name__ == '__main__':
-    test2()
-
+    # test2()
+    url="https://www.atmos-chem-phys-discuss.net/15/19835/2015/"
+    data=requests.get(url)
+    print(data.text)
 
 
 

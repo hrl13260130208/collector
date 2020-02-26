@@ -434,7 +434,8 @@ header={"User-Agent": fake.user_agent()}
 
 
 def get_html(url):
-    time.sleep(random.random()*3+1)
+    wait()
+
     # print("========",url)
     data = requests.get(url,headers=header,verify=False,timeout=60)
     # print(data.cookies)
@@ -446,6 +447,7 @@ def get_html(url):
     return datatext,data.url
 
 def download(url, file):
+    wait()
     # time.sleep(random.random()*3+1)
     # proip =find_proxy_ip()
     # print(url)
@@ -475,6 +477,9 @@ def checkpdf(file):
             logger.warning("PDF删除出错.")
         raise ValueError("PDF出错！")
 
+
+def wait():
+    time.sleep(random.random() * 5 + 3)
 #
 # def get_data(url):
 #     try:

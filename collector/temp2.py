@@ -8,10 +8,10 @@ import collector.htmls as htmls
 
 if __name__ == '__main__':
     # name = "osti_10"
-    name = "yj1209"
+    name = "zx0220"
 
     # file_path = r"C:\public\目次采全文\0730\osti_10.xls"
-    file_path = r"C:\public\目次采全文\1209\冶金所待补全文清单_20191209..xls"
+    file_path = r"C:\public\目次采全文\0220\中信所待补全文清单_20200220..xls"
 
     # check_task(name)
     cp = htmls.config_parser()

@@ -213,10 +213,26 @@ class MergeExcels():
 if __name__ == '__main__':
     # MergeExcels().read_excel(r"C:\temp\test.xls")
     # MergeExcels().read_dir(r"C:\temp\osti")
-    # MergeExcels().update(r"C:\temp\osti\r1119\web_xls\springer.xls",add_sources=True)
+    # MergeExcels().update(r"C:\temp\osti\r1119\web_xls\acs.xls",add_sources=True)
     # MergeExcels().export(r"C:\temp\test.txt")
     # MergeExcels().query(labels=[NOTDONE])
-    MergeExcels().query_source("springer")
+    # MergeExcels().query_source("springer")
+
+    f=open(r"C:\temp\新建文件夹\pdfs.txt","w+",encoding="utf-8")
+    nm=neo_manager()
+    n=nm.match_by_dict([ARTICLE])
+    n=nm.parser_to_node(n)
+    for i in n:
+        print(i.get(PINJIE),i.get(FULL_PATH))
+        url=i.get(PINJIE)
+        full_path=i.get(FULL_PATH)
+        print(full_path=="")
+        if full_path!="":
+            path=os.path.join(r"Z:\Backup\FTP_PDF\Report\doe\hb",full_path)
+            new_name = url[url.rfind("/") + 1:]
+            f.write(url + "," + new_name + "," + path + "\n")
+
+
 
 
 

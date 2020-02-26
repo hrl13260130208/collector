@@ -239,9 +239,9 @@ def check_conf():
     tm.check_confs()
 
 def test_download():
-    url_="http://dx.doi.org/10.31035/cg2018054"
+    url_="http://dx.doi.org/10.1016/j.athoracsur.2019.05.024"
 
-    section="common_2"
+    section="Elsevier_0003-4975"
     cp=htmls.config_parser()
     print(cp.get_section(section))
     d_url=htmls.HTML(None,None,None,"test").do_run(cp.get_section(section),url_)

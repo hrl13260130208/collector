@@ -8,11 +8,11 @@ import collector.htmls as htmls
 
 if __name__ == '__main__':
     # name = "osti_9"
-    name = "jx1209"
+    name = "yj0220"
 
 
     # file_path = r"C:\public\目次采全文\0730\osti_9.xls"
-    file_path = r"C:\public\目次采全文\1209\机械所待补全文清单_20191209..xls"
+    file_path = r"C:\public\目次采全文\0220\冶金所待补全文清单_20200220..xls"
 
 
 
